@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevWeb Guide — Guía de Desarrollo Web</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Prism.js para resaltado de código -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <!-- La navegación se inyecta aquí por nav.js -->
+
+  <main class="content">
+
+    <!-- ── Hero ──────────────────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-badge">Curso Práctico</div>
+      <h1>Guía de Desarrollo Web</h1>
+      <p class="hero-sub">Asignatura: Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones</p>
+    </section>
+
+    <!-- ── Introducción ──────────────────────────────────────────────── -->
+    <p style="font-size:1.05rem; color:#475569; margin-bottom:2rem; max-width:680px;">
+      Esta guía cubre desde los fundamentos de HTML hasta la conexión de una
+      base de datos PostgreSQL con PHP, pasando por CSS, JavaScript y la
+      arquitectura MVC. Todo con ejemplos completos y comentados en español.
+    </p>
+
+    <!-- ── Grid de tarjetas: Desarrollo Web ─────────────────────────── -->
+    <h3 class="cards-group-title">🌐 Desarrollo Web</h3>
+    <div class="cards-grid">
+
+      <a href="pages/html.html" class="card card-html">
+        <span class="card-icon">🌐</span>
+        <h3>HTML</h3>
+        <p>La estructura de toda página web. Etiquetas, formularios y HTML semántico.</p>
+      </a>
+
+      <a href="pages/css.html" class="card card-css">
+        <span class="card-icon">🎨</span>
+        <h3>CSS</h3>
+        <p>Estilo y diseño: selectores, Flexbox, variables y diseño responsive.</p>
+      </a>
+
+      <a href="pages/javascript.html" class="card card-js">
+        <span class="card-icon">⚡</span>
+        <h3>JavaScript</h3>
+        <p>Interactividad en el navegador: DOM, eventos y peticiones Fetch.</p>
+      </a>
+
+      <a href="pages/php.html" class="card card-php">
+        <span class="card-icon">🐘</span>
+        <h3>PHP</h3>
+        <p>Lógica del servidor: variables, funciones, arrays y superglobales.</p>
+      </a>
+
+      <a href="pages/mvc.html" class="card card-mvc">
+        <span class="card-icon">🏗️</span>
+        <h3>Arquitectura MVC</h3>
+        <p>Organiza tu código con Model-View-Controller. Adiós al código espagueti.</p>
+      </a>
+
+    </div>
+
+    <!-- ── Grid de tarjetas: Base de Datos ──────────────────────────── -->
+    <h3 class="cards-group-title">🗄️ Base de Datos</h3>
+    <div class="cards-grid">
+
+      <a href="pages/postgresql.html" class="card card-pg">
+        <span class="card-icon">🗄️</span>
+        <h3>Base de Datos</h3>
+        <p>Diseña tablas, escribe SQL y conecta PHP a PostgreSQL con PDO.</p>
+      </a>
+
+      <a href="pages/uml-db.html" class="card card-uml">
+        <span class="card-icon">📊</span>
+        <h3>UML / Diagramas ER</h3>
+        <p>Diseña la estructura de tu base de datos antes de escribir SQL.</p>
+      </a>
+
+    </div>
+
+    <!-- ── Grid de tarjetas: Herramientas y Prácticas ───────────────── -->
+    <h3 class="cards-group-title">🛠️ Herramientas y Prácticas</h3>
+    <div class="cards-grid">
+
+      <a href="pages/devtools.html" class="card card-devtools">
+        <span class="card-icon">🔍</span>
+        <h3>DevTools del Navegador</h3>
+        <p>Trucos del inspector de elementos, consola, red y depuración.</p>
+      </a>
+
+      <a href="pages/seguridad.html" class="card card-sec">
+        <span class="card-icon">🔒</span>
+        <h3>Seguridad</h3>
+        <p>SQL Injection, XSS, hashing de contraseñas y variables de entorno.</p>
+      </a>
+
+      <a href="pages/buenas-practicas.html" class="card card-bp">
+        <span class="card-icon">✅</span>
+        <h3>Buenas Prácticas</h3>
+        <p>DRY, nombres descriptivos, estructura de archivos y control de versiones.</p>
+      </a>
+
+    </div>
+
+    <!-- ── Cómo usar esta guía ───────────────────────────────────────── -->
+    <h2 class="section-title">¿Cómo usar esta guía?</h2>
+    <p>
+      Cada sección es independiente pero se recomienda seguir el orden presentado,
+      ya que los conceptos se van apoyando unos en otros. Todos los ejemplos de
+      código son completos y ejecutables; puedes copiarlos directamente en tus
+      archivos de práctica.
+    </p>
+
+    <div class="note">
+      <strong>💡 Consejo</strong>
+      Aprenderás mucho más si escribes el código tú mismo en lugar de copiar y pegar.
+      Cometer errores y corregirlos es parte fundamental del proceso de aprendizaje.
+    </div>
+
+    <h2 class="section-title">Entorno de trabajo</h2>
+    <div class="note">
+      <strong>📌 Infraestructura facilitada por la asignatura</strong>
+      El servidor web y la base de datos ya están instalados y configurados en un servidor de la UAB.
+      Vosotros solo necesitáis conectaros y empezar a programar.
+    </div>
+
+    <h3>Acceso al servidor (SSH)</h3>
+    <p>
+      El código vive en un servidor remoto de la UAB. Para editarlo cómodamente
+      se recomienda usar <strong>VS Code con la extensión Remote SSH</strong>,
+      que permite abrir la carpeta del servidor como si fuera local.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Herramienta</th>
+          <th>Uso</th>
+          <th>Cómo obtenerla</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>VS Code</strong> ⭐ recomendado</td>
+          <td>Editor de código</td>
+          <td>code.visualstudio.com</td>
+        </tr>
+        <tr>
+          <td><strong>Remote - SSH</strong> ⭐ recomendado</td>
+          <td>Extensión de VS Code para conectarse al servidor UAB por SSH y editar archivos remotos</td>
+          <td>Marketplace de VS Code → buscar "Remote - SSH" (Microsoft)</td>
+        </tr>
+        <tr>
+          <td><strong>MobaXTerm</strong></td>
+          <td>Cliente SSH alternativo con terminal integrado (Windows)</td>
+          <td>mobaxterm.mobatek.net</td>
+        </tr>
+        <tr>
+          <td><strong>Terminal / iTerm2</strong></td>
+          <td>Acceso SSH desde línea de comandos: <code>ssh usuario@servidor.uab.cat</code></td>
+          <td>Incluido en macOS/Linux. Windows: usar PowerShell o WSL</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Acceso a la base de datos</h3>
+    <p>
+      La base de datos PostgreSQL también está en el servidor remoto.
+      Se recomienda gestionarla con la extensión de VS Code para no necesitar
+      instalar nada adicional.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Herramienta</th>
+          <th>Uso</th>
+          <th>Cómo obtenerla</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Database Client JDBC</strong> ⭐ recomendado</td>
+          <td>Extensión de VS Code para explorar y consultar la DB PostgreSQL directamente desde el editor</td>
+          <td>Marketplace de VS Code → buscar "Database Client JDBC"</td>
+        </tr>
+        <tr>
+          <td><strong>psql</strong></td>
+          <td>Cliente oficial de PostgreSQL por terminal: <code>psql -U usuario -d mi_bd</code></td>
+          <td>Incluido en el servidor. Acceder vía SSH</td>
+        </tr>
+        <tr>
+          <td><strong>pgAdmin 4</strong></td>
+          <td>Interfaz gráfica completa para PostgreSQL (alternativa si preferís una app dedicada)</td>
+          <td>pgadmin.org</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Herramientas de depuración</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Herramienta</th>
+          <th>Uso</th>
+          <th>Dónde</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Chrome DevTools</strong></td>
+          <td>Inspeccionar HTML/CSS, consola JS, red (F12 o clic derecho → Inspeccionar)</td>
+          <td>Incluido en Google Chrome</td>
+        </tr>
+        <tr>
+          <td><strong>Firefox DevTools</strong></td>
+          <td>Alternativa a Chrome, muy potente para CSS Grid/Flexbox</td>
+          <td>Incluido en Mozilla Firefox</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ── Recursos externos ───────────────────────────────────────────── -->
+    <h2 class="section-title">Recursos externos para aprender</h2>
+    <p>
+      Esta guía cubre los conceptos esenciales para la práctica, pero para
+      profundizar y consultar referencias completas te recomendamos estos recursos
+      (todos gratuitos):
+    </p>
+    <table>
+      <thead>
+        <tr><th>Recurso</th><th>Para qué sirve</th><th>URL</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>W3Schools</strong> ⭐</td>
+          <td>Referencia y tutoriales de HTML, CSS, JS, PHP, SQL. Muy directa, con ejemplos interactivos.</td>
+          <td>w3schools.com</td>
+        </tr>
+        <tr>
+          <td><strong>MDN Web Docs</strong> ⭐</td>
+          <td>Documentación oficial de HTML/CSS/JS mantenida por Mozilla. La referencia más completa y fiable.</td>
+          <td>developer.mozilla.org</td>
+        </tr>
+        <tr>
+          <td><strong>PHP Manual</strong></td>
+          <td>Documentación oficial de PHP. Consulta cualquier función con ejemplos de uso.</td>
+          <td>php.net/manual/es</td>
+        </tr>
+        <tr>
+          <td><strong>PostgreSQL Docs</strong></td>
+          <td>Documentación oficial de PostgreSQL. Referencia completa de SQL y funciones.</td>
+          <td>postgresql.org/docs</td>
+        </tr>
+        <tr>
+          <td><strong>CSS-Tricks</strong></td>
+          <td>Guías muy visuales de Flexbox, Grid y técnicas CSS avanzadas.</td>
+          <td>css-tricks.com</td>
+        </tr>
+        <tr>
+          <td><strong>The Odin Project</strong></td>
+          <td>Curso completo y gratuito de desarrollo web desde cero (inglés).</td>
+          <td>theodinproject.com</td>
+        </tr>
+        <tr>
+          <td><strong>Stack Overflow</strong></td>
+          <td>Comunidad donde encontrarás respuesta a casi cualquier error o duda de programación.</td>
+          <td>stackoverflow.com</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>💡 Cómo usar W3Schools en la práctica</strong>
+      Cuando no recuerdes la sintaxis exacta de una etiqueta o función, busca en Google:
+      <code>w3schools html &lt;etiqueta&gt;</code> o <code>mdn css flex</code>.
+      Son las búsquedas más rápidas para resolver dudas concretas.
+    </div>
+
+    <!-- ── Ruta de aprendizaje ───────────────────────────────────────── -->
+    <h2 class="section-title">Ruta de aprendizaje sugerida</h2>
+    <ol>
+      <li><strong>HTML</strong> — Aprende a estructurar contenido con etiquetas.</li>
+      <li><strong>CSS</strong> — Dale estilo y diseño a tu estructura HTML.</li>
+      <li><strong>JavaScript</strong> — Añade interactividad en el navegador.</li>
+      <li><strong>PHP</strong> — Lógica del servidor: procesa formularios y genera HTML dinámico.</li>
+      <li><strong>PostgreSQL</strong> — Aprende SQL y cómo conectar PHP a una base de datos.</li>
+      <li><strong>MVC</strong> — Organiza todo lo anterior en una arquitectura profesional.</li>
+      <li><strong>Seguridad</strong> — Aprende a proteger tu aplicación: SQL Injection, XSS, hashing.</li>
+      <li><strong>Buenas Prácticas</strong> — Escribe código limpio, mantenible y profesional.</li>
+      <li><strong>UML / ER</strong> — Diseña la estructura de tu DB antes de crear tablas.</li>
+      <li><strong>DevTools</strong> — Usa las herramientas del navegador para depurar tu web.</li>
+    </ol>
+
+    <div class="tip">
+      <strong>✅ Objetivo final</strong>
+      Al terminar esta guía serás capaz de construir una aplicación web completa
+      con interfaz de usuario, lógica de servidor y persistencia de datos en una
+      base de datos relacional.
+    </div>
+
+    <!-- ── Footer ────────────────────────────────────────────────────── -->
+    <footer class="site-footer">
+      Práctica de Programació Web · Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PHP — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <!-- La navegación se inyecta por nav.js -->
+
+  <main class="content">
+
+    <!-- ── Cabecera de página ────────────────────────────────────────── -->
+    <div class="page-header" style="border-left-color:#8b5cf6;">
+      <h1>🐘 PHP</h1>
+      <p class="page-intro">
+        PHP (<em>PHP: Hypertext Preprocessor</em>) es un lenguaje de programación
+        del <strong>lado del servidor</strong>. El servidor ejecuta el código PHP
+        y devuelve HTML al navegador. El usuario nunca ve el código PHP.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿QUÉ ES PHP?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Qué es PHP?</h2>
+
+    <p>
+      Cuando un usuario visita una URL como <code>https://miweb.com/perfil.php</code>,
+      el servidor web (Apache, Nginx…) ejecuta el archivo PHP, que puede acceder a la
+      base de datos, leer archivos, procesar formularios… y al final genera HTML que
+      se envía al navegador.
+    </p>
+
+    <p>
+      PHP puede mezclarse con HTML en el mismo archivo, o puede generar respuestas
+      JSON para APIs que consume JavaScript. Potencia el 77% de los sitios web del mundo
+      (WordPress, Wikipedia, Facebook en sus inicios, etc.).
+    </p>
+
+    <div class="note">
+      <strong>📌 En esta asignatura</strong>
+      El servidor ya está configurado en la UAB. Conéctate por SSH con VS Code
+      (Remote - SSH) y edita tus archivos directamente en el servidor.
+      No necesitas instalar nada en tu ordenador.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1b. DE index.html A index.php
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1b. ¿Cuándo pasar de index.html a index.php?</h2>
+
+    <p>
+      Cuando empiezas un proyecto web, puedes usar <code>index.html</code> para crear
+      una página estática. Pero en cuanto necesitas <strong>lógica de servidor</strong>
+      — procesar un formulario, consultar la base de datos, mostrar datos dinámicos —
+      hay que cambiar a <code>index.php</code>.
+    </p>
+
+    <table>
+      <thead><tr><th></th><th>index<strong>.html</strong></th><th>index<strong>.php</strong></th></tr></thead>
+      <tbody>
+        <tr><td>¿Lo ejecuta el servidor?</td><td>No — se envía tal cual al navegador</td><td>Sí — el servidor lo procesa antes de enviarlo</td></tr>
+        <tr><td>¿Puede conectarse a la DB?</td><td>❌ No</td><td>✅ Sí</td></tr>
+        <tr><td>¿Puede procesar formularios?</td><td>❌ No</td><td>✅ Sí</td></tr>
+        <tr><td>¿Puede mostrar datos dinámicos?</td><td>❌ No</td><td>✅ Sí</td></tr>
+        <tr><td>¿Contiene código PHP?</td><td>❌ Solo HTML</td><td>✅ Mezcla HTML + PHP</td></tr>
+      </tbody>
+    </table>
+
+    <div class="tip">
+      <strong>✅ Regla práctica</strong>
+      Simplemente <strong>renombra el archivo</strong> de <code>index.html</code> a
+      <code>index.php</code> cuando necesites añadir PHP. El servidor detecta la
+      extensión y ejecuta el código PHP automáticamente.
+      Los demás archivos HTML que no necesiten PHP pueden quedarse como <code>.html</code>.
+    </div>
+
+<pre><code class="language-php">&lt;!-- index.php: puedes mezclar HTML y PHP en el mismo archivo --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Mi Web&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+  &lt;!-- Bloque PHP dentro del HTML --&gt;
+  &lt;?php
+    $nombre = "Estudiante";
+    $hora   = date("H"); // hora actual del servidor
+
+    // Saludo dinámico según la hora
+    if ($hora &lt; 12) {
+        $saludo = "Buenos días";
+    } elseif ($hora &lt; 20) {
+        $saludo = "Buenas tardes";
+    } else {
+        $saludo = "Buenas noches";
+    }
+  ?&gt;
+
+  &lt;!-- PHP genera el HTML dinámicamente --&gt;
+  &lt;h1&gt;&lt;?= $saludo ?&gt;, &lt;?= $nombre ?&gt;!&lt;/h1&gt;
+  &lt;p&gt;Son las &lt;?= $hora ?&gt; horas en el servidor.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. SINTAXIS BÁSICA
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Sintaxis básica</h2>
+
+<pre><code class="language-php">&lt;?php
+// El código PHP va entre &lt;?php y ?&gt;
+// Esta etiqueta de cierre es opcional si el archivo es solo PHP (recomendado)
+
+// ── echo: mostrar texto / HTML ──
+echo "Hola, mundo!";
+echo "&lt;p&gt;Esto es un párrafo generado con PHP.&lt;/p&gt;";
+echo "&lt;h1&gt;" . "Título dinámico" . "&lt;/h1&gt;";  // concatenación con punto .
+
+// print también funciona, pero echo es más rápido
+print "También imprime texto";
+
+// ── Variables: empiezan siempre con $ ──
+$nombre   = "Ana García";
+$edad     = 22;
+$promedio = 8.75;
+$activo   = true;
+
+// PHP no requiere declarar el tipo — es de tipado dinámico
+echo $nombre;         // → Ana García
+echo "Edad: $edad";   // Las variables se interpretan dentro de comillas dobles
+echo 'Edad: $edad';   // Con comillas simples NO se interpolan → "Edad: $edad"
+
+// ── Comentarios ──
+// Comentario de una línea
+# También comentario de una línea
+/* Comentario
+   de varias
+   líneas */
+?&gt;</code></pre>
+
+    <h3>PHP mezclado con HTML</h3>
+
+<pre><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Página con PHP&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;?php
+  // Podemos tener PHP en cualquier parte del HTML
+  $titulo    = "Bienvenido al sistema";
+  $usuario   = "Ana García";
+  $fechaHoy  = date("d/m/Y"); // Función de fecha de PHP
+?&gt;
+
+  &lt;h1&gt;&lt;?php echo $titulo; ?&gt;&lt;/h1&gt;
+  &lt;!-- Atajo: &lt;?= equivale a &lt;?php echo --&gt;
+  &lt;p&gt;Hola, &lt;?= $usuario ?&gt;. Hoy es &lt;?= $fechaHoy ?&gt;.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. TIPOS Y OPERADORES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. Tipos de datos y operadores</h2>
+
+<pre><code class="language-php">&lt;?php
+// ── Tipos básicos ──
+$cadena  = "Hola";          // string
+$entero  = 42;              // integer
+$decimal = 3.14;            // float
+$booleano = true;           // boolean
+$nulo    = null;            // null
+
+// Comprobar el tipo
+var_dump($cadena);    // → string(4) "Hola"
+var_dump($entero);    // → int(42)
+gettype($booleano);   // → "boolean"
+
+// ── Conversión de tipos ──
+$numero_str = "42";
+$numero     = (int)$numero_str;      // → 42
+$decimal2   = (float)"3.14abc";     // → 3.14
+$texto      = (string)100;          // → "100"
+
+// ── Operadores aritméticos ──
+echo 10 + 3;   // → 13
+echo 10 - 3;   // → 7
+echo 10 * 3;   // → 30
+echo 10 / 3;   // → 3.333...
+echo 10 % 3;   // → 1 (módulo)
+echo 2 ** 8;   // → 256 (potencia)
+
+// ── Concatenación de strings con punto . ──
+$nombre    = "Ana";
+$apellido  = "García";
+$completo  = $nombre . " " . $apellido;  // → "Ana García"
+
+// Concatenar y asignar
+$mensaje  = "Hola";
+$mensaje .= ", mundo!";  // → "Hola, mundo!"
+
+// ── Operadores de comparación ──
+// == compara valor (con conversión de tipo)
+// === compara valor Y tipo (recomendado)
+var_dump(0 == "0");    // → true (loose comparison)
+var_dump(0 === "0");   // → false (strict comparison: int vs string)
+var_dump(0 != "a");    // → true
+var_dump(0 !== "0");   // → true
+
+var_dump(5 &gt; 3);   // → true
+var_dump(5 &lt; 3);   // → false
+var_dump(5 &gt;= 5);  // → true
+
+// ── Operadores lógicos ──
+$a = true;
+$b = false;
+
+var_dump($a &amp;&amp; $b);   // AND → false
+var_dump($a || $b);   // OR  → true
+var_dump(!$a);        // NOT → false
+?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. ESTRUCTURAS DE CONTROL
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. Estructuras de control</h2>
+
+<pre><code class="language-php">&lt;?php
+// ── if / elseif / else ──
+$nota = 7.5;
+
+if ($nota &gt;= 9) {
+    echo "Sobresaliente";
+} elseif ($nota &gt;= 7) {
+    echo "Notable";
+} elseif ($nota &gt;= 5) {
+    echo "Aprobado";
+} else {
+    echo "Suspenso";
+}
+
+// Operador ternario (forma corta)
+$estado = ($nota &gt;= 5) ? "Aprobado" : "Suspenso";
+echo $estado; // → "Notable" ... eh, "Aprobado"
+
+// Null coalescing operator (??) — muy útil con formularios
+$nombre = $_GET['nombre'] ?? 'Anónimo';
+// Si $_GET['nombre'] existe y no es null → lo usa; si no → 'Anónimo'
+
+// ── switch ──
+$dia = "lunes";
+
+switch ($dia) {
+    case "lunes":
+    case "martes":
+    case "miércoles":
+    case "jueves":
+    case "viernes":
+        echo "Día laborable";
+        break;
+    case "sábado":
+    case "domingo":
+        echo "Fin de semana";
+        break;
+    default:
+        echo "Día no reconocido";
+}
+
+// ── for ──
+for ($i = 1; $i <= 5; $i++) {
+    echo "Iteración número $i &lt;br&gt;";
+}
+
+// ── foreach — el más usado para arrays ──
+$frutas = ["manzana", "pera", "naranja", "uva"];
+
+foreach ($frutas as $fruta) {
+    echo "- $fruta &lt;br&gt;";
+}
+
+// Con índice:
+foreach ($frutas as $indice => $fruta) {
+    echo "$indice: $fruta &lt;br&gt;";
+}
+
+// ── while ──
+$intentos = 0;
+$maxIntentos = 3;
+
+while ($intentos &lt; $maxIntentos) {
+    echo "Intento " . ($intentos + 1) . "&lt;br&gt;";
+    $intentos++;
+}
+
+// ── do...while — se ejecuta al menos una vez ──
+$numero = 0;
+do {
+    echo "Número: $numero &lt;br&gt;";
+    $numero++;
+} while ($numero &lt; 3);
+?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. FUNCIONES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Funciones</h2>
+
+<pre><code class="language-php">&lt;?php
+// ── Definición de función ──
+function saludar($nombre, $saludo = "Hola") {
+    // $saludo tiene valor por defecto
+    return "$saludo, $nombre!";
+}
+
+echo saludar("Ana");              // → "Hola, Ana!"
+echo saludar("Carlos", "Buenas"); // → "Buenas, Carlos!"
+
+// ── Función que retorna múltiples valores (como array) ──
+function dividir($dividendo, $divisor) {
+    if ($divisor == 0) {
+        return ["error" => "División por cero"];
+    }
+    return [
+        "cociente"  => intdiv($dividendo, $divisor),
+        "resto"     => $dividendo % $divisor
+    ];
+}
+
+$resultado = dividir(17, 5);
+echo "Cociente: " . $resultado['cociente']; // → 3
+echo "Resto: "    . $resultado['resto'];    // → 2
+
+// ── Type hints (PHP 7+) — declarar tipos de parámetros y retorno ──
+function calcularIMC(float $peso, float $altura): float {
+    return $peso / ($altura ** 2);
+}
+
+function obtenerSaludo(string $nombre): string {
+    return "Hola, $nombre!";
+}
+
+// ── Funciones de string de PHP ──
+$cadena = "  Hola, Mundo!  ";
+
+echo strlen($cadena);            // → 16 (longitud)
+echo strtolower($cadena);        // → "  hola, mundo!  "
+echo strtoupper($cadena);        // → "  HOLA, MUNDO!  "
+echo trim($cadena);              // → "Hola, Mundo!" (quita espacios)
+echo str_replace(",", ";", $cadena); // → "  Hola; Mundo!  "
+echo substr($cadena, 2, 4);      // → "Hola" (desde pos 2, 4 chars)
+echo strpos($cadena, "Mundo");   // → 7 (posición de "Mundo")
+echo str_word_count($cadena);    // → 2 (número de palabras)
+
+// Funciones de número
+echo round(3.567, 2);   // → 3.57 (redondear a 2 decimales)
+echo ceil(4.1);         // → 5  (redondear arriba)
+echo floor(4.9);        // → 4  (redondear abajo)
+echo abs(-42);          // → 42 (valor absoluto)
+echo rand(1, 100);      // Número aleatorio entre 1 y 100
+?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. ARRAYS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Arrays</h2>
+
+<pre><code class="language-php">&lt;?php
+// ── Array indexado ──
+$colores = ["rojo", "verde", "azul"];
+$colores[] = "amarillo"; // Añadir al final (equivale a array_push)
+
+echo $colores[0];    // → "rojo"
+echo count($colores); // → 4
+
+array_push($colores, "morado");  // Añadir al final
+array_unshift($colores, "negro"); // Añadir al principio
+$ultimo = array_pop($colores);    // Quitar y devolver el último
+$primero = array_shift($colores); // Quitar y devolver el primero
+
+// Ordenar
+sort($colores);   // Ordena ascendente (modifica el array original)
+rsort($colores);  // Ordena descendente
+
+// ── Array asociativo (clave => valor) ──
+$usuario = [
+    "nombre"   => "Ana García",
+    "email"    => "ana@universidad.es",
+    "edad"     => 22,
+    "carrera"  => "Telecomunicaciones",
+    "activo"   => true
+];
+
+// Acceder por clave
+echo $usuario["nombre"];  // → "Ana García"
+echo $usuario["email"];   // → "ana@universidad.es"
+
+// Añadir / modificar
+$usuario["telefono"] = "+34 600 000 000";
+$usuario["edad"]     = 23;
+
+// Comprobar si existe una clave
+if (isset($usuario["telefono"])) {
+    echo "Tiene teléfono: " . $usuario["telefono"];
+}
+
+// Eliminar clave
+unset($usuario["activo"]);
+
+// Claves y valores
+$claves  = array_keys($usuario);   // ["nombre", "email", "edad", ...]
+$valores = array_values($usuario); // ["Ana García", "ana@...", 22, ...]
+
+// ── Array de arrays (bidimensional) — típico para datos de DB ──
+$estudiantes = [
+    ["nombre" => "Ana",    "nota" => 9.0],
+    ["nombre" => "Carlos", "nota" => 7.5],
+    ["nombre" => "María",  "nota" => 8.3],
+];
+
+// Recorrer con foreach
+foreach ($estudiantes as $estudiante) {
+    echo $estudiante["nombre"] . ": " . $estudiante["nota"] . "&lt;br&gt;";
+}
+
+// Ordenar por un campo
+usort($estudiantes, fn($a, $b) => $b["nota"] &lt;=&gt; $a["nota"]);
+// Ahora están ordenados de mayor a menor nota
+
+// ── Funciones útiles de array ──
+$numeros = [3, 1, 4, 1, 5, 9, 2, 6, 5];
+
+$unicos  = array_unique($numeros);       // Elimina duplicados
+$filtrados = array_filter($numeros, fn($n) => $n &gt; 3); // Solo los > 3
+$dobles  = array_map(fn($n) => $n * 2, $numeros);      // Multiplica por 2
+$suma    = array_sum($numeros);          // → 36 (suma de todos)
+
+var_dump(in_array(5, $numeros));        // → true (¿existe el valor?)
+?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. SUPERGLOBALES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Superglobales: $_GET, $_POST, $_SESSION</h2>
+
+    <p>
+      Las superglobales son arrays especiales de PHP accesibles en cualquier
+      parte del código (sin necesidad de declarar como global).
+    </p>
+
+<pre><code class="language-php">&lt;?php
+// ── $_GET: parámetros en la URL ──
+// URL: http://localhost/buscar.php?termino=redes&pagina=2
+
+$termino = $_GET['termino'] ?? '';  // → "redes"
+$pagina  = (int)($_GET['pagina'] ?? 1);  // → 2
+
+// ⚠️ SIEMPRE sanitizar antes de usar
+$termino_seguro = htmlspecialchars($termino, ENT_QUOTES, 'UTF-8');
+echo "Buscando: $termino_seguro en página $pagina";
+
+// ── $_POST: datos enviados por formulario POST ──
+// (Más seguro que GET para datos sensibles: no aparecen en la URL)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre   = trim($_POST['nombre']   ?? '');
+    $email    = trim($_POST['email']    ?? '');
+    $password = $_POST['password'] ?? '';
+
+    // Validar
+    if (empty($nombre)) {
+        $errores[] = "El nombre es obligatorio";
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errores[] = "Email no válido";
+    }
+    if (strlen($password) &lt; 8) {
+        $errores[] = "La contraseña debe tener al menos 8 caracteres";
+    }
+
+    if (empty($errores)) {
+        // Procesar datos (guardar en BD, enviar email...)
+        $password_hash = password_hash($password, PASSWORD_BCRYPT);
+        echo "Formulario válido. Procesando...";
+    }
+}
+
+// ── $_SESSION: guardar datos entre páginas ──
+// ⚠️ Siempre llamar session_start() ANTES de cualquier output HTML
+session_start();
+
+// Guardar datos en la sesión (p.ej: al hacer login)
+$_SESSION['usuario_id']    = 42;
+$_SESSION['usuario_nombre'] = "Ana García";
+$_SESSION['logueado']       = true;
+
+// Leer datos de la sesión (en cualquier otra página)
+if (isset($_SESSION['logueado']) &amp;&amp; $_SESSION['logueado'] === true) {
+    $nombre = $_SESSION['usuario_nombre'];
+    echo "Bienvenida, $nombre!";
+} else {
+    header('Location: login.php');  // Redirigir a login
+    exit; // Importante: detener ejecución después de header redirect
+}
+
+// Eliminar un dato de la sesión
+unset($_SESSION['temporal']);
+
+// Destruir la sesión completa (logout)
+session_destroy();
+?&gt;</code></pre>
+
+    <h3>Diferencias entre GET y POST</h3>
+    <table>
+      <thead>
+        <tr><th>Característica</th><th>GET</th><th>POST</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Datos en URL</td><td>Sí (visibles)</td><td>No</td></tr>
+        <tr><td>Tamaño máximo</td><td>~2000 caracteres</td><td>Sin límite práctico</td></tr>
+        <tr><td>Seguridad</td><td>Menor</td><td>Mayor</td></tr>
+        <tr><td>Cacheable</td><td>Sí</td><td>No</td></tr>
+        <tr><td>Uso típico</td><td>Búsquedas, filtros</td><td>Login, crear, editar</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. INCLUIR ARCHIVOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Incluir archivos: include y require</h2>
+
+    <p>
+      Para no repetir código (como la conexión a la base de datos o el header de
+      la página), podemos separarlo en archivos e incluirlos donde se necesiten.
+    </p>
+
+<pre><code class="language-php">&lt;?php
+// ── require: si el archivo no existe, el script FALLA (error fatal) ──
+// Ideal para archivos críticos como la conexión a la BD
+require 'config/database.php';        // Ruta relativa
+require_once 'config/database.php';   // Solo incluye UNA vez (evita duplicados)
+
+// ── include: si el archivo no existe, solo da un WARNING (el script continúa) ──
+// Ideal para partes de la vista (cabecera, pie de página...)
+include 'views/header.php';
+include_once 'views/footer.php';
+
+// Ejemplo: estructura típica de un archivo PHP con includes
+?&gt;</code></pre>
+
+<pre><code class="language-php">&lt;?php
+// config/database.php — Archivo de configuración de la BD
+// Este archivo se incluye con require en todos los que necesiten la BD
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'mi_proyecto');
+define('DB_USER', 'postgres');
+define('DB_PASS', 'mi_password');
+define('DB_PORT', '5432');
+?&gt;</code></pre>
+
+<pre><code class="language-php">&lt;?php
+// views/header.php — Cabecera reutilizable
+?&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;&lt;?= $titulo ?? 'Mi Aplicación' ?&gt;&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;nav&gt;
+  &lt;a href="/"&gt;Inicio&lt;/a&gt;
+  &lt;a href="/usuarios.php"&gt;Usuarios&lt;/a&gt;
+&lt;/nav&gt;</code></pre>
+
+<pre><code class="language-php">&lt;?php
+// index.php — Página principal que une todo
+$titulo = "Bienvenido";
+
+require_once 'config/database.php';
+include 'views/header.php';
+?&gt;
+
+&lt;main&gt;
+  &lt;h1&gt;¡Hola!&lt;/h1&gt;
+  &lt;p&gt;Conectado a &lt;?= DB_NAME ?&gt;&lt;/p&gt;
+&lt;/main&gt;
+
+&lt;?php include 'views/footer.php'; ?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         9. BUENAS PRÁCTICAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">9. Buenas prácticas</h2>
+
+    <div class="warning">
+      <strong>⚠️ Nunca mostrar errores en producción</strong>
+      Durante el desarrollo activa los errores para detectar bugs. En producción,
+      desactívalos para no revelar información sensible del servidor.
+    </div>
+
+<pre><code class="language-php">&lt;?php
+// ── Configuración de errores ──
+
+// Desarrollo: mostrar todos los errores
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Producción: ocultar errores al usuario, guardar en log
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
+ini_set('error_log', '/var/log/php/error.log');
+error_reporting(E_ALL);
+
+// ── Separar lógica de presentación ──
+// ❌ MAL: HTML y lógica mezclados
+echo "&lt;?php
+if(\$nota &gt;= 5) {
+    echo '&lt;p style=\"color:green\"&gt;' . \$nombre . ' ha aprobado&lt;/p&gt;';
+} else {
+    echo '&lt;p style=\"color:red\"&gt;' . \$nombre . ' ha suspendido&lt;/p&gt;';
+}
+?&gt;";
+
+// ✅ BIEN: lógica en PHP, HTML en la vista
+// En el controlador (PHP puro):
+$aprobado  = ($nota &gt;= 5);
+$clase_css = $aprobado ? 'texto-verde' : 'texto-rojo';
+$mensaje   = $aprobado ? "$nombre ha aprobado" : "$nombre ha suspendido";
+
+// En la vista (mínimo PHP):
+// &lt;p class="&lt;?= $clase_css ?&gt;"&gt;&lt;?= htmlspecialchars($mensaje) ?&gt;&lt;/p&gt;
+
+// ── Sanitizar output: siempre escapar antes de mostrar ──
+$nombre_usuario = $_GET['nombre'] ?? '';
+// ❌ MAL: XSS posible
+echo "Hola, $nombre_usuario";
+// ✅ BIEN: escapado
+echo "Hola, " . htmlspecialchars($nombre_usuario, ENT_QUOTES, 'UTF-8');
+
+// ── Usar prepared statements (ver guía de PostgreSQL) ──
+// ❌ NUNCA hacer esto:
+// $query = "SELECT * FROM usuarios WHERE email = '$email'";
+// ✅ SIEMPRE usar prepared statements:
+// $stmt = $pdo-&gt;prepare("SELECT * FROM usuarios WHERE email = :email");
+// $stmt-&gt;execute([':email' =&gt; $email]);
+?&gt;</code></pre>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+</body>
+</html>

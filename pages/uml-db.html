@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UML y Diagramas ER — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <main class="content">
+
+    <div class="page-header" style="border-left-color:#a855f7;">
+      <h1>📊 UML y Diagramas ER</h1>
+      <p class="page-intro">
+        Antes de escribir una sola línea de SQL, necesitas un plano. Los diagramas
+        Entidad-Relación (ER) y los diagramas de clases UML son ese plano: te
+        permiten diseñar la estructura de tu base de datos y tu código con claridad,
+        antes de que cambiar algo cueste horas de refactorización.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿POR QUÉ DISEÑAR ANTES DE PROGRAMAR?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Por qué diseñar antes de programar?</h2>
+
+    <p>
+      Imagina que vas a construir una casa. No empezarías a colocar ladrillos sin
+      tener primero los planos del arquitecto. Sin planos, las paredes pueden no
+      cuadrar, las habitaciones pueden quedar mal distribuidas, y cambiar algo
+      implica tirar lo que ya está hecho.
+    </p>
+    <p>
+      Con las bases de datos ocurre exactamente lo mismo. Si empiezas a crear
+      tablas directamente en PostgreSQL sin haberlo diseñado antes, es muy probable
+      que acabes con:
+    </p>
+    <ul>
+      <li><strong>Datos redundantes</strong>: el mismo dato repetido en múltiples tablas.</li>
+      <li><strong>Relaciones rotas</strong>: claves foráneas que no apuntan a ningún lado.</li>
+      <li><strong>Tablas demasiado grandes</strong>: una tabla que debería ser tres.</li>
+      <li><strong>Refactorizaciones dolorosas</strong>: cambiar una columna implica modificar 10 scripts PHP.</li>
+    </ul>
+
+    <div class="tip">
+      <strong>✅ La regla de oro</strong>
+      Dibuja el diagrama primero. Aunque sea en papel y a mano. Cinco minutos
+      diseñando te pueden ahorrar horas de correcciones.
+    </div>
+
+    <p>
+      Un buen diseño de base de datos también facilita el trabajo en equipo:
+      cuando todos los miembros ven el mismo diagrama, todo el mundo sabe qué
+      tabla hace qué y cómo se relacionan.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. DIAGRAMA ENTIDAD-RELACIÓN (ER)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Diagrama Entidad-Relación (ER)</h2>
+
+    <p>
+      El <strong>Diagrama Entidad-Relación</strong> (o diagrama ER) es el método
+      más usado para modelar bases de datos relacionales. Fue propuesto por Peter
+      Chen en 1976 y sigue siendo el estándar hoy en día.
+    </p>
+
+    <h3>Los tres conceptos fundamentales</h3>
+
+    <table>
+      <thead>
+        <tr><th>Concepto</th><th>Representación</th><th>En la base de datos</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Entidad</strong></td>
+          <td>Rectángulo</td>
+          <td>Una tabla</td>
+          <td><code>usuarios</code>, <code>productos</code>, <code>pedidos</code></td>
+        </tr>
+        <tr>
+          <td><strong>Atributo</strong></td>
+          <td>Óvalo</td>
+          <td>Una columna de la tabla</td>
+          <td><code>nombre</code>, <code>email</code>, <code>precio</code></td>
+        </tr>
+        <tr>
+          <td><strong>Relación</strong></td>
+          <td>Rombo</td>
+          <td>Clave foránea (FK)</td>
+          <td>"un usuario <em>realiza</em> muchos pedidos"</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Cardinalidad</h3>
+    <p>
+      La <strong>cardinalidad</strong> indica cuántas instancias de una entidad
+      se relacionan con cuántas instancias de otra. Hay tres tipos:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Tipo</th><th>Notación</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Uno a uno (1:1)</strong></td>
+          <td>1 ─── 1</td>
+          <td>Un usuario tiene un perfil. Un perfil pertenece a un usuario.</td>
+        </tr>
+        <tr>
+          <td><strong>Uno a muchos (1:N)</strong></td>
+          <td>1 ─── N</td>
+          <td>Un usuario tiene muchos pedidos. Un pedido pertenece a un usuario.</td>
+        </tr>
+        <tr>
+          <td><strong>Muchos a muchos (N:M)</strong></td>
+          <td>N ─── M</td>
+          <td>Un pedido tiene muchos productos. Un producto aparece en muchos pedidos.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>📌 N:M siempre necesita una tabla intermedia</strong>
+      Una relación muchos a muchos no se puede representar directamente con
+      claves foráneas. Necesita una <strong>tabla de unión</strong> (también
+      llamada tabla puente o junction table) que contiene las FKs de ambas tablas.
+    </div>
+
+    <!-- Diagrama visual simple ER -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin:1.5rem 0;padding:1.5rem;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+
+      <div style="background:#1e293b;border:2px solid #3b82f6;border-radius:8px;min-width:160px;">
+        <div style="background:#3b82f6;color:white;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;">usuarios</div>
+        <div style="padding:8px 16px;font-size:.85rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id (PK)</div>
+        <div style="padding:4px 16px;font-size:.85rem;color:#94a3b8;">nombre</div>
+        <div style="padding:4px 16px 8px;font-size:.85rem;color:#94a3b8;">email</div>
+      </div>
+
+      <div style="display:flex;align-items:center;font-size:1.2rem;color:#64748b;flex-direction:column;gap:4px;">
+        <span style="font-size:.7rem;color:#94a3b8;">1</span>
+        <span>───</span>
+        <span style="font-size:.7rem;color:#94a3b8;">N</span>
+      </div>
+
+      <div style="background:#1e293b;border:2px solid #a855f7;border-radius:8px;min-width:160px;">
+        <div style="background:#a855f7;color:white;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;">pedidos</div>
+        <div style="padding:8px 16px;font-size:.85rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id (PK)</div>
+        <div style="padding:4px 16px;font-size:.85rem;color:#f59e0b;">🔗 usuario_id (FK)</div>
+        <div style="padding:4px 16px;font-size:.85rem;color:#94a3b8;">fecha</div>
+        <div style="padding:4px 16px 8px;font-size:.85rem;color:#94a3b8;">estado</div>
+      </div>
+
+      <div style="display:flex;align-items:center;font-size:1.2rem;color:#64748b;flex-direction:column;gap:4px;">
+        <span style="font-size:.7rem;color:#94a3b8;">N</span>
+        <span>───</span>
+        <span style="font-size:.7rem;color:#94a3b8;">M</span>
+      </div>
+
+      <div style="background:#1e293b;border:2px solid #22c55e;border-radius:8px;min-width:160px;">
+        <div style="background:#22c55e;color:white;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;">productos</div>
+        <div style="padding:8px 16px;font-size:.85rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id (PK)</div>
+        <div style="padding:4px 16px;font-size:.85rem;color:#94a3b8;">nombre</div>
+        <div style="padding:4px 16px;font-size:.85rem;color:#94a3b8;">precio</div>
+        <div style="padding:4px 16px 8px;font-size:.85rem;color:#94a3b8;">stock</div>
+      </div>
+
+    </div>
+    <p style="font-size:.8rem;color:#64748b;margin-top:-.5rem;">
+      Diagrama simplificado: <code>usuarios</code> (1) → (N) <code>pedidos</code> (N) ↔ (M) <code>productos</code>.
+      La relación N:M entre pedidos y productos requiere una tabla intermedia <code>detalle_pedido</code>.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. EJEMPLO PRÁCTICO COMPLETO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. Ejemplo práctico completo</h2>
+
+    <p>
+      Vamos a diseñar la base de datos de una pequeña tienda online.
+      Primero el diagrama, luego el SQL.
+    </p>
+
+    <h3>Paso 1: El diagrama</h3>
+
+    <!-- Diagrama completo e-commerce -->
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:flex-start;margin:1.5rem 0;padding:1.5rem;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+
+      <!-- usuarios -->
+      <div style="background:#1e293b;border:2px solid #3b82f6;border-radius:8px;min-width:170px;">
+        <div style="background:#3b82f6;color:white;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;">usuarios</div>
+        <div style="padding:8px 16px;font-size:.82rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id SERIAL PK</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#94a3b8;">nombre VARCHAR(100)</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#94a3b8;">email VARCHAR(150)</div>
+        <div style="padding:4px 16px 8px;font-size:.82rem;color:#94a3b8;">contraseña_hash TEXT</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:2.5rem;flex-direction:column;gap:2px;">
+        <span style="font-size:.7rem;color:#94a3b8;">1</span>
+        <span style="color:#64748b;font-size:1.2rem;">↓</span>
+        <span style="font-size:.7rem;color:#94a3b8;">N</span>
+      </div>
+
+      <!-- pedidos -->
+      <div style="background:#1e293b;border:2px solid #a855f7;border-radius:8px;min-width:180px;">
+        <div style="background:#a855f7;color:white;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;">pedidos</div>
+        <div style="padding:8px 16px;font-size:.82rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id SERIAL PK</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#f59e0b;">🔗 usuario_id FK → usuarios</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#94a3b8;">fecha TIMESTAMP</div>
+        <div style="padding:4px 16px 8px;font-size:.82rem;color:#94a3b8;">estado VARCHAR(20)</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:2.5rem;flex-direction:column;gap:2px;">
+        <span style="font-size:.7rem;color:#94a3b8;">1</span>
+        <span style="color:#64748b;font-size:1.2rem;">↓</span>
+        <span style="font-size:.7rem;color:#94a3b8;">N</span>
+      </div>
+
+      <!-- detalle_pedido (tabla de unión) -->
+      <div style="background:#1e293b;border:2px dashed #f59e0b;border-radius:8px;min-width:180px;">
+        <div style="background:#78350f;color:#fbbf24;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;font-size:.82rem;">detalle_pedido (unión N:M)</div>
+        <div style="padding:8px 16px;font-size:.82rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id SERIAL PK</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#f59e0b;">🔗 pedido_id FK → pedidos</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#f59e0b;">🔗 producto_id FK → productos</div>
+        <div style="padding:4px 16px 8px;font-size:.82rem;color:#94a3b8;">cantidad INTEGER</div>
+      </div>
+
+      <div style="display:flex;align-items:center;padding-top:2.5rem;flex-direction:column;gap:2px;">
+        <span style="font-size:.7rem;color:#94a3b8;">N</span>
+        <span style="color:#64748b;font-size:1.2rem;">↓</span>
+        <span style="font-size:.7rem;color:#94a3b8;">1</span>
+      </div>
+
+      <!-- productos -->
+      <div style="background:#1e293b;border:2px solid #22c55e;border-radius:8px;min-width:170px;">
+        <div style="background:#22c55e;color:white;font-weight:700;padding:8px 16px;border-radius:6px 6px 0 0;text-align:center;">productos</div>
+        <div style="padding:8px 16px;font-size:.82rem;color:#e2e8f0;border-bottom:1px solid #334155;">🔑 id SERIAL PK</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#94a3b8;">nombre VARCHAR(200)</div>
+        <div style="padding:4px 16px;font-size:.82rem;color:#94a3b8;">precio DECIMAL(10,2)</div>
+        <div style="padding:4px 16px 8px;font-size:.82rem;color:#94a3b8;">stock INTEGER</div>
+      </div>
+
+    </div>
+
+    <h3>Paso 2: El SQL (viene DESPUÉS del diagrama)</h3>
+
+    <pre><code class="language-sql">-- 1. Primero, la tabla sin dependencias externas
+CREATE TABLE usuarios (
+    id               SERIAL PRIMARY KEY,
+    nombre           VARCHAR(100) NOT NULL,
+    email            VARCHAR(150) UNIQUE NOT NULL,
+    contrasena_hash  TEXT NOT NULL,
+    creado_en        TIMESTAMP DEFAULT NOW()
+);
+
+-- 2. Luego la tabla de productos (tampoco tiene FKs aún)
+CREATE TABLE productos (
+    id       SERIAL PRIMARY KEY,
+    nombre   VARCHAR(200) NOT NULL,
+    precio   DECIMAL(10, 2) NOT NULL CHECK (precio >= 0),
+    stock    INTEGER DEFAULT 0 CHECK (stock >= 0)
+);
+
+-- 3. Ahora pedidos (depende de usuarios → se crea después)
+CREATE TABLE pedidos (
+    id          SERIAL PRIMARY KEY,
+    usuario_id  INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    fecha       TIMESTAMP DEFAULT NOW(),
+    estado      VARCHAR(20) DEFAULT 'pendiente'
+                    CHECK (estado IN ('pendiente','pagado','enviado','cancelado'))
+);
+
+-- 4. La tabla de unión se crea al final (depende de las otras dos)
+CREATE TABLE detalle_pedido (
+    id          SERIAL PRIMARY KEY,
+    pedido_id   INTEGER NOT NULL REFERENCES pedidos(id)   ON DELETE CASCADE,
+    producto_id INTEGER NOT NULL REFERENCES productos(id) ON DELETE RESTRICT,
+    cantidad    INTEGER NOT NULL CHECK (cantidad > 0),
+    precio_unit DECIMAL(10, 2) NOT NULL  -- precio en el momento de la compra
+);</code></pre>
+
+    <div class="tip">
+      <strong>💡 El orden importa</strong>
+      Las tablas con claves foráneas deben crearse DESPUÉS de las tablas a las
+      que apuntan. Por eso <code>pedidos</code> se crea después de <code>usuarios</code>,
+      y <code>detalle_pedido</code> se crea la última.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. TIPOS DE RELACIONES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. Tipos de relaciones</h2>
+
+    <h3>Relación 1:1 — Uno a uno</h3>
+    <p>
+      Una instancia de la entidad A se relaciona con exactamente una instancia
+      de la entidad B, y viceversa.
+    </p>
+
+    <!-- Diagrama 1:1 -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin:1.5rem 0;padding:1.25rem;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+      <div style="background:#1e293b;border:2px solid #3b82f6;border-radius:8px;min-width:140px;">
+        <div style="background:#3b82f6;color:white;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.85rem;">usuarios</div>
+        <div style="padding:6px 14px;font-size:.82rem;color:#94a3b8;">🔑 id PK</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">nombre</div>
+      </div>
+      <div style="color:#64748b;font-size:1rem;text-align:center;">
+        <div style="font-size:.7rem;color:#94a3b8;margin-bottom:2px;">1</div>
+        ────
+        <div style="font-size:.7rem;color:#94a3b8;margin-top:2px;">1</div>
+      </div>
+      <div style="background:#1e293b;border:2px solid #ec4899;border-radius:8px;min-width:140px;">
+        <div style="background:#ec4899;color:white;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.85rem;">perfiles</div>
+        <div style="padding:6px 14px;font-size:.82rem;color:#94a3b8;">🔑 id PK</div>
+        <div style="padding:4px 14px;font-size:.82rem;color:#f59e0b;">🔗 usuario_id FK UNIQUE</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">biografia</div>
+      </div>
+    </div>
+
+    <pre><code class="language-sql">CREATE TABLE perfiles (
+    id          SERIAL PRIMARY KEY,
+    usuario_id  INTEGER UNIQUE NOT NULL REFERENCES usuarios(id),
+    -- UNIQUE garantiza que solo puede haber un perfil por usuario
+    biografia   TEXT,
+    avatar_url  VARCHAR(255)
+);</code></pre>
+
+    <h3>Relación 1:N — Uno a muchos</h3>
+    <p>
+      Una instancia de A puede relacionarse con muchas instancias de B, pero
+      cada instancia de B solo pertenece a una instancia de A. Es el tipo
+      de relación más común.
+    </p>
+
+    <!-- Diagrama 1:N -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:center;margin:1.5rem 0;padding:1.25rem;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+      <div style="background:#1e293b;border:2px solid #3b82f6;border-radius:8px;min-width:140px;">
+        <div style="background:#3b82f6;color:white;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.85rem;">usuarios</div>
+        <div style="padding:6px 14px;font-size:.82rem;color:#94a3b8;">🔑 id PK</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">nombre</div>
+      </div>
+      <div style="color:#64748b;font-size:1rem;text-align:center;">
+        <div style="font-size:.7rem;color:#94a3b8;margin-bottom:2px;">1</div>
+        ────
+        <div style="font-size:.7rem;color:#94a3b8;margin-top:2px;">N</div>
+      </div>
+      <div style="background:#1e293b;border:2px solid #a855f7;border-radius:8px;min-width:140px;">
+        <div style="background:#a855f7;color:white;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.85rem;">pedidos</div>
+        <div style="padding:6px 14px;font-size:.82rem;color:#94a3b8;">🔑 id PK</div>
+        <div style="padding:4px 14px;font-size:.82rem;color:#f59e0b;">🔗 usuario_id FK</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">fecha</div>
+      </div>
+    </div>
+
+    <p>
+      La clave foránea siempre va en el lado del "muchos" (N).
+      En el ejemplo, <code>usuario_id</code> está en la tabla <code>pedidos</code>
+      porque un pedido pertenece a un usuario (no al revés).
+    </p>
+
+    <h3>Relación N:M — Muchos a muchos</h3>
+    <p>
+      Muchas instancias de A se relacionan con muchas instancias de B. En bases
+      de datos relacionales, esta relación no se puede representar directamente
+      — necesita una <strong>tabla de unión</strong> que contiene las FKs de ambas tablas.
+    </p>
+
+    <!-- Diagrama N:M con tabla puente -->
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center;margin:1.5rem 0;padding:1.25rem;background:#1e293b;border-radius:8px;border:1px solid #334155;">
+      <div style="background:#1e293b;border:2px solid #a855f7;border-radius:8px;min-width:130px;">
+        <div style="background:#a855f7;color:white;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.85rem;">pedidos</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">🔑 id PK</div>
+      </div>
+      <div style="color:#64748b;text-align:center;">
+        <div style="font-size:.7rem;color:#94a3b8;">1</div>
+        <span>──</span>
+        <div style="font-size:.7rem;color:#94a3b8;">N</div>
+      </div>
+      <div style="background:#1e293b;border:2px dashed #f59e0b;border-radius:8px;min-width:160px;">
+        <div style="background:#78350f;color:#fbbf24;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.8rem;">detalle_pedido</div>
+        <div style="padding:4px 14px;font-size:.82rem;color:#f59e0b;">🔗 pedido_id FK</div>
+        <div style="padding:4px 14px;font-size:.82rem;color:#f59e0b;">🔗 producto_id FK</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">cantidad</div>
+      </div>
+      <div style="color:#64748b;text-align:center;">
+        <div style="font-size:.7rem;color:#94a3b8;">N</div>
+        <span>──</span>
+        <div style="font-size:.7rem;color:#94a3b8;">1</div>
+      </div>
+      <div style="background:#1e293b;border:2px solid #22c55e;border-radius:8px;min-width:130px;">
+        <div style="background:#22c55e;color:white;font-weight:700;padding:6px 14px;border-radius:6px 6px 0 0;text-align:center;font-size:.85rem;">productos</div>
+        <div style="padding:6px 14px 8px;font-size:.82rem;color:#94a3b8;">🔑 id PK</div>
+      </div>
+    </div>
+
+    <p>
+      La tabla <code>detalle_pedido</code> resuelve la relación N:M descomponiéndola
+      en dos relaciones 1:N. Además puede contener atributos propios de la relación,
+      como la <code>cantidad</code> o el <code>precio_unit</code> en el momento de
+      la compra.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. UML DE CLASES PARA MVC
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. UML de Clases para MVC</h2>
+
+    <p>
+      El <strong>diagrama de clases UML</strong> se usa para modelar la capa de
+      modelos de una arquitectura MVC. Cada caja representa una clase PHP con sus
+      atributos (propiedades) y métodos.
+    </p>
+
+    <h3>Caja de clase UML</h3>
+    <p>Una caja de clase UML tiene tres secciones:</p>
+
+    <!-- Diagrama clase UML visual -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start;margin:1.5rem 0;">
+
+      <div style="background:#1e293b;border:2px solid #3b82f6;border-radius:8px;min-width:220px;font-family:monospace;">
+        <div style="background:#3b82f6;color:white;font-weight:700;padding:8px 16px;text-align:center;border-radius:6px 6px 0 0;">
+          Usuario
+        </div>
+        <div style="padding:8px 16px;border-bottom:1px solid #475569;">
+          <div style="font-size:.82rem;color:#94a3b8;">- id: int</div>
+          <div style="font-size:.82rem;color:#94a3b8;">- nombre: string</div>
+          <div style="font-size:.82rem;color:#94a3b8;">- email: string</div>
+          <div style="font-size:.82rem;color:#94a3b8;">- contraseñaHash: string</div>
+        </div>
+        <div style="padding:8px 16px 12px;">
+          <div style="font-size:.82rem;color:#86efac;">+ __construct(nombre, email)</div>
+          <div style="font-size:.82rem;color:#86efac;">+ getById(id): Usuario</div>
+          <div style="font-size:.82rem;color:#86efac;">+ guardar(): bool</div>
+          <div style="font-size:.82rem;color:#86efac;">+ eliminar(): bool</div>
+        </div>
+      </div>
+
+      <div style="max-width:300px;padding-top:.5rem;">
+        <p style="font-size:.85rem;color:#94a3b8;margin-bottom:.5rem;">
+          <strong style="color:#e2e8f0;">Sección 1:</strong> Nombre de la clase
+        </p>
+        <p style="font-size:.85rem;color:#94a3b8;margin-bottom:.5rem;">
+          <strong style="color:#e2e8f0;">Sección 2:</strong> Atributos (propiedades).
+          El símbolo <code>-</code> indica privado, <code>+</code> público, <code>#</code> protegido.
+        </p>
+        <p style="font-size:.85rem;color:#94a3b8;margin:0;">
+          <strong style="color:#e2e8f0;">Sección 3:</strong> Métodos.
+          El tipo de retorno va después de <code>:</code>.
+        </p>
+      </div>
+
+    </div>
+
+    <h3>Código PHP correspondiente</h3>
+
+    <pre><code class="language-sql">-- El diagrama UML de la clase Usuario
+-- se corresponde con esta tabla SQL:
+
+CREATE TABLE usuarios (
+    id              SERIAL PRIMARY KEY,
+    nombre          VARCHAR(100) NOT NULL,
+    email           VARCHAR(150) UNIQUE NOT NULL,
+    contrasena_hash TEXT NOT NULL
+);</code></pre>
+
+    <div class="tip">
+      <strong>💡 UML y ER son complementarios</strong>
+      El diagrama ER describe la base de datos. El diagrama de clases UML describe
+      el código PHP. En una app bien diseñada, cada tabla del ER suele corresponder
+      a una clase PHP en la carpeta <code>models/</code>.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. HERRAMIENTAS PARA HACER DIAGRAMAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Herramientas para hacer diagramas</h2>
+
+    <table>
+      <thead>
+        <tr><th>Herramienta</th><th>Tipo</th><th>Coste</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>draw.io / diagrams.net</strong> ⭐</td>
+          <td>Online / Desktop</td>
+          <td>Gratis</td>
+          <td>La herramienta más recomendada. Sin cuenta necesaria. Arrastra y suelta formas, exporta como PNG, SVG o XML. Perfecta para ER y UML.</td>
+        </tr>
+        <tr>
+          <td><strong>dbdiagram.io</strong> ⭐</td>
+          <td>Online</td>
+          <td>Gratis (plan básico)</td>
+          <td>Escribe tu esquema de base de datos en un lenguaje simple (DBML) y el diagrama se genera automáticamente. Muy rápido para prototipar.</td>
+        </tr>
+        <tr>
+          <td><strong>Lucidchart</strong></td>
+          <td>Online</td>
+          <td>Gratis (limitado) / Pago</td>
+          <td>Herramienta profesional muy completa. El plan gratuito permite crear diagramas básicos.</td>
+        </tr>
+        <tr>
+          <td><strong>pgAdmin ER Diagrams</strong></td>
+          <td>Desktop</td>
+          <td>Gratis</td>
+          <td>pgAdmin 4 puede generar diagramas ER a partir de una base de datos PostgreSQL existente. Ideal para entender una DB ya creada.</td>
+        </tr>
+        <tr>
+          <td><strong>ERD Editor (VS Code)</strong></td>
+          <td>Extensión VS Code</td>
+          <td>Gratis</td>
+          <td>Edita diagramas ER directamente dentro de VS Code, sin salir del editor.</td>
+        </tr>
+        <tr>
+          <td><strong>Papel y bolígrafo</strong></td>
+          <td>Físico</td>
+          <td>Gratis</td>
+          <td>Para bocetos rápidos, siempre válido. La velocidad de pensar con papel es insuperable.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip">
+      <strong>💡 Prueba dbdiagram.io</strong>
+      Entra en <strong>dbdiagram.io</strong> y escribe esto en el editor:
+      <pre style="margin:.5rem 0 0;"><code class="language-sql">Table usuarios {
+  id integer [pk, increment]
+  nombre varchar
+  email varchar [unique]
+}
+
+Table pedidos {
+  id integer [pk, increment]
+  usuario_id integer [ref: > usuarios.id]
+  fecha timestamp
+}</code></pre>
+      El diagrama se genera automáticamente a la derecha. Puedes exportarlo como imagen.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. DEL DIAGRAMA AL CÓDIGO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Del diagrama al código</h2>
+
+    <p>
+      Aquí está el proceso completo, paso a paso, para ir de un enunciado de
+      problema hasta el código SQL y PHP funcional.
+    </p>
+
+    <h3>Ejemplo: "Construye una app de gestión de tareas para equipos"</h3>
+
+    <table>
+      <thead>
+        <tr><th>Paso</th><th>Acción</th><th>Resultado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1</strong></td>
+          <td>Identifica las entidades (sustantivos del enunciado)</td>
+          <td><code>usuarios</code>, <code>equipos</code>, <code>tareas</code></td>
+        </tr>
+        <tr>
+          <td><strong>2</strong></td>
+          <td>Identifica los atributos de cada entidad</td>
+          <td>
+            usuarios: nombre, email<br>
+            equipos: nombre, descripcion<br>
+            tareas: titulo, descripcion, estado, fecha_limite
+          </td>
+        </tr>
+        <tr>
+          <td><strong>3</strong></td>
+          <td>Identifica las relaciones (verbos del enunciado)</td>
+          <td>
+            un usuario <em>pertenece a</em> un equipo (1:N)<br>
+            una tarea <em>es asignada a</em> un usuario (1:N)<br>
+            una tarea <em>pertenece a</em> un equipo (1:N)
+          </td>
+        </tr>
+        <tr>
+          <td><strong>4</strong></td>
+          <td>Decide las cardinalidades</td>
+          <td>¿Puede un usuario pertenecer a varios equipos? → entonces es N:M</td>
+        </tr>
+        <tr>
+          <td><strong>5</strong></td>
+          <td>Dibuja el diagrama</td>
+          <td>En draw.io o dbdiagram.io, con todas las tablas y flechas</td>
+        </tr>
+        <tr>
+          <td><strong>6</strong></td>
+          <td>Escribe las sentencias CREATE TABLE en SQL</td>
+          <td>Primero las tablas sin FKs, luego las que tienen FKs</td>
+        </tr>
+        <tr>
+          <td><strong>7</strong></td>
+          <td>Escribe el código PHP (Models)</td>
+          <td>Una clase PHP por cada tabla, con métodos CRUD</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>📌 El diagrama puede evolucionar</strong>
+      No pasa nada si el diagrama cambia a medida que avanzas en el desarrollo.
+      Lo importante es que SIEMPRE refleje el estado actual de la base de datos.
+      Si cambias una tabla, actualiza el diagrama. Trátalo como documentación viva.
+    </div>
+
+    <div class="tip">
+      <strong>✅ Resumen del proceso</strong>
+      <strong>Análisis → Diagrama ER → SQL → PHP</strong>. En ese orden.
+      Nunca empieces por el código. El diagrama es el contrato entre el diseño
+      y la implementación.
+    </div>
+
+    <!-- ── Footer ────────────────────────────────────────────────────── -->
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+</body>
+</html>

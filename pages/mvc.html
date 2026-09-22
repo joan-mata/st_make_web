@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVC — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <!-- La navegación se inyecta por nav.js -->
+
+  <main class="content">
+
+    <!-- ── Cabecera de página ────────────────────────────────────────── -->
+    <div class="page-header" style="border-left-color:#22c55e;">
+      <h1>🏗️ Arquitectura MVC</h1>
+      <p class="page-intro">
+        MVC (Model-View-Controller) es un patrón de diseño que separa la
+        aplicación en tres capas independientes, haciendo el código más
+        <strong>organizado, mantenible y escalable</strong>.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿QUÉ ES MVC?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Qué es MVC y qué problema resuelve?</h2>
+
+    <p>
+      Imagina que tienes un archivo PHP de 500 líneas donde se mezcla la consulta
+      a la base de datos, la lógica del negocio y el HTML de la página. Esto se
+      llama <strong>"código espagueti"</strong>: todo enredado, imposible de
+      mantener o ampliar.
+    </p>
+
+    <p>
+      MVC propone dividir ese caos en <strong>tres responsabilidades claras</strong>:
+    </p>
+
+    <ul>
+      <li><strong>Model (Modelo):</strong> gestiona los datos y la lógica del negocio. Habla con la base de datos.</li>
+      <li><strong>View (Vista):</strong> presenta los datos al usuario. Solo genera HTML.</li>
+      <li><strong>Controller (Controlador):</strong> es el intermediario. Recibe peticiones, llama al modelo y elige la vista.</li>
+    </ul>
+
+    <div class="note">
+      <strong>📌 La regla de oro del MVC</strong>
+      El Modelo no sabe nada del HTML. La Vista no hace consultas a la BD.
+      El Controlador no tiene HTML ni SQL directos. Cada capa hace <em>una sola cosa</em>.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. DIAGRAMA VISUAL
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Diagrama visual</h2>
+
+    <!-- Diagrama MVC con CSS puro -->
+    <div class="mvc-diagram">
+      <div class="mvc-box user">
+        <span class="mvc-label">Cliente</span>
+        <span class="mvc-name">🌐 Usuario</span>
+      </div>
+
+      <div class="mvc-arrow">⟷</div>
+
+      <div class="mvc-box controller">
+        <span class="mvc-label">Capa de control</span>
+        <span class="mvc-name">⚙️ Controller</span>
+      </div>
+
+      <div class="mvc-arrow">⟷</div>
+
+      <div class="mvc-box model">
+        <span class="mvc-label">Capa de datos</span>
+        <span class="mvc-name">🗄️ Model</span>
+      </div>
+
+      <div class="mvc-arrow" style="opacity:.3;">⟷</div>
+
+      <div class="mvc-box" style="border-color:#475569; opacity:.6;">
+        <span class="mvc-label">Almacén</span>
+        <span class="mvc-name">💾 DB</span>
+      </div>
+    </div>
+
+    <div class="mvc-diagram" style="margin-top:-.5rem;">
+      <div style="width:110px;"></div>
+      <div class="mvc-arrow">⟷</div>
+      <div class="mvc-box view">
+        <span class="mvc-label">Capa visual</span>
+        <span class="mvc-name">🖥️ View</span>
+      </div>
+      <div class="mvc-arrow" style="opacity:.2;">—</div>
+      <div style="width:110px;"></div>
+    </div>
+
+    <p style="text-align:center; color:var(--text-muted); font-size:.9rem; margin-top:.5rem;">
+      El Controlador orquesta todo: recibe del usuario, consulta el Modelo y selecciona la Vista.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. EL MODELO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. El Modelo (Model)</h2>
+
+    <p>
+      El Modelo es la capa que gestiona los <strong>datos de la aplicación</strong>.
+      Sus responsabilidades son:
+    </p>
+    <ul>
+      <li>Realizar consultas a la base de datos (SELECT, INSERT, UPDATE, DELETE).</li>
+      <li>Validar los datos antes de guardarlos.</li>
+      <li>Contener la lógica del negocio (reglas de la aplicación).</li>
+      <li><strong>No debe</strong> generar HTML ni saber cómo se va a mostrar la información.</li>
+    </ul>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. LA VISTA
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. La Vista (View)</h2>
+
+    <p>
+      La Vista es la capa de <strong>presentación</strong>. Sus responsabilidades son:
+    </p>
+    <ul>
+      <li>Recibir datos (normalmente variables PHP) y presentarlos en HTML.</li>
+      <li>No tomar decisiones de negocio ni hacer consultas a la BD.</li>
+      <li>Puede tener lógica mínima de presentación (bucles foreach para listar, if para mostrar/ocultar).</li>
+      <li>Un archivo de vista por cada "pantalla" de la aplicación.</li>
+    </ul>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. EL CONTROLADOR
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. El Controlador (Controller)</h2>
+
+    <p>
+      El Controlador es el <strong>director de orquesta</strong>. Sus responsabilidades son:
+    </p>
+    <ul>
+      <li>Recibir la petición HTTP del usuario.</li>
+      <li>Llamar al Modelo para obtener o modificar datos.</li>
+      <li>Pasar los datos obtenidos a la Vista.</li>
+      <li>No debe contener HTML ni SQL directamente.</li>
+    </ul>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. ESTRUCTURA DE CARPETAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Estructura de carpetas</h2>
+
+    <div class="folder-tree">
+<span class="dir">mi-proyecto/</span>
+├── <span class="file">index.php</span>             <span class="note-text">← Router / Front Controller</span>
+│
+├── <span class="dir">controllers/</span>
+│   ├── <span class="file">UserController.php</span>
+│   └── <span class="file">ProductController.php</span>
+│
+├── <span class="dir">models/</span>
+│   ├── <span class="file">User.php</span>
+│   └── <span class="file">Product.php</span>
+│
+├── <span class="dir">views/</span>
+│   ├── <span class="file">layout.php</span>         <span class="note-text">← Plantilla base (header, footer)</span>
+│   ├── <span class="dir">users/</span>
+│   │   ├── <span class="file">list.php</span>        <span class="note-text">← Lista de usuarios</span>
+│   │   ├── <span class="file">show.php</span>        <span class="note-text">← Detalle de un usuario</span>
+│   │   ├── <span class="file">create.php</span>      <span class="note-text">← Formulario de creación</span>
+│   │   └── <span class="file">edit.php</span>        <span class="note-text">← Formulario de edición</span>
+│   └── <span class="dir">products/</span>
+│       └── <span class="file">list.php</span>
+│
+└── <span class="dir">config/</span>
+    └── <span class="file">database.php</span>        <span class="note-text">← Conexión PDO a PostgreSQL</span>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. EJEMPLO COMPLETO: LISTAR USUARIOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Ejemplo completo: listar usuarios</h2>
+
+    <p>
+      Vamos a construir la funcionalidad de "listar todos los usuarios" siguiendo
+      el patrón MVC. Necesitamos cuatro archivos:
+    </p>
+
+    <h3>config/database.php — Conexión PDO</h3>
+
+    <div class="warning">
+      <strong>⚠️ Nunca pongas contraseñas en el código</strong>
+      Las credenciales de la base de datos deben leerse de variables de entorno,
+      nunca escritas directamente en el archivo. Consulta la guía de
+      <a href="seguridad.html">Seguridad</a> para ver cómo hacerlo correctamente.
+    </div>
+
+<pre><code class="language-php">&lt;?php
+// config/database.php
+// Devuelve una conexión PDO a PostgreSQL.
+// Las credenciales se leen de variables de entorno (.env),
+// NUNCA se escriben directamente aquí. Ver guía de Seguridad.
+
+function getDBConnection(): PDO {
+    // getenv() lee las variables definidas en el entorno del servidor
+    $host   = getenv('DB_HOST') ?: 'localhost';
+    $port   = getenv('DB_PORT') ?: '5432';
+    $dbname = getenv('DB_NAME') ?: 'mi_proyecto';
+    $user   = getenv('DB_USER') ?: 'postgres';
+    $pass   = getenv('DB_PASSWORD') ?: '';
+
+    try {
+        $dsn = "pgsql:host=$host;port=$port;dbname=$dbname";
+        $pdo = new PDO($dsn, $user, $pass, [
+            PDO::ATTR_ERRMODE            =&gt; PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+        ]);
+        return $pdo;
+
+    } catch (PDOException $e) {
+        error_log("Error de conexión DB: " . $e-&gt;getMessage());
+        die("Error de conexión a la base de datos.");
+    }
+}</code></pre>
+
+    <h3>models/User.php — El Modelo</h3>
+
+<pre><code class="language-php">&lt;?php
+// models/User.php
+// El Modelo gestiona los datos de los usuarios.
+// NO sabe nada de HTML.
+
+require_once __DIR__ . '/../config/database.php';
+
+class User {
+
+    private PDO $pdo;
+
+    // El constructor obtiene la conexión a la BD
+    public function __construct() {
+        $this-&gt;pdo = getDBConnection();
+    }
+
+    // Obtener todos los usuarios
+    public function getAll(): array {
+        $stmt = $this-&gt;pdo-&gt;query("SELECT id, nombre, email, created_at FROM usuarios ORDER BY nombre");
+        return $stmt-&gt;fetchAll(); // Devuelve array de arrays asociativos
+    }
+
+    // Obtener un usuario por su ID
+    public function getById(int $id): array|false {
+        $stmt = $this-&gt;pdo-&gt;prepare("SELECT * FROM usuarios WHERE id = :id");
+        $stmt-&gt;execute([':id' =&gt; $id]);
+        return $stmt-&gt;fetch(); // Devuelve un array o false si no existe
+    }
+
+    // Crear un nuevo usuario
+    public function create(string $nombre, string $email, string $password): int {
+        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $stmt = $this-&gt;pdo-&gt;prepare(
+            "INSERT INTO usuarios (nombre, email, password_hash)
+             VALUES (:nombre, :email, :password_hash)
+             RETURNING id"
+        );
+        $stmt-&gt;execute([
+            ':nombre'        =&gt; $nombre,
+            ':email'         =&gt; $email,
+            ':password_hash' =&gt; $hash
+        ]);
+        return (int)$stmt-&gt;fetchColumn(); // Devuelve el ID generado
+    }
+
+    // Actualizar un usuario
+    public function update(int $id, string $nombre, string $email): bool {
+        $stmt = $this-&gt;pdo-&gt;prepare(
+            "UPDATE usuarios SET nombre = :nombre, email = :email
+             WHERE id = :id"
+        );
+        return $stmt-&gt;execute([
+            ':nombre' =&gt; $nombre,
+            ':email'  =&gt; $email,
+            ':id'     =&gt; $id
+        ]);
+    }
+
+    // Eliminar un usuario
+    public function delete(int $id): bool {
+        $stmt = $this-&gt;pdo-&gt;prepare("DELETE FROM usuarios WHERE id = :id");
+        return $stmt-&gt;execute([':id' =&gt; $id]);
+    }
+}</code></pre>
+
+    <h3>controllers/UserController.php — El Controlador</h3>
+
+<pre><code class="language-php">&lt;?php
+// controllers/UserController.php
+// El Controlador recibe la petición, llama al Modelo y carga la Vista.
+// NO contiene HTML ni SQL.
+
+require_once __DIR__ . '/../models/User.php';
+
+class UserController {
+
+    private User $userModel;
+
+    public function __construct() {
+        $this-&gt;userModel = new User();
+    }
+
+    // Acción: listar todos los usuarios
+    public function index(): void {
+        // 1. Llamar al Modelo para obtener datos
+        $usuarios = $this-&gt;userModel-&gt;getAll();
+
+        // 2. Pasar los datos a la Vista
+        // La vista puede acceder a $usuarios
+        require __DIR__ . '/../views/users/list.php';
+    }
+
+    // Acción: mostrar formulario de creación
+    public function create(): void {
+        require __DIR__ . '/../views/users/create.php';
+    }
+
+    // Acción: procesar el formulario de creación
+    public function store(): void {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /index.php?action=create');
+            exit;
+        }
+
+        $nombre   = trim($_POST['nombre']   ?? '');
+        $email    = trim($_POST['email']    ?? '');
+        $password = $_POST['password'] ?? '';
+
+        // Validación
+        $errores = [];
+        if (empty($nombre)) $errores[] = "El nombre es obligatorio";
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errores[] = "Email no válido";
+        if (strlen($password) &lt; 8) $errores[] = "Contraseña mínimo 8 caracteres";
+
+        if (!empty($errores)) {
+            // Volver al formulario con los errores
+            require __DIR__ . '/../views/users/create.php';
+            return;
+        }
+
+        // Llamar al Modelo para guardar
+        $id = $this-&gt;userModel-&gt;create($nombre, $email, $password);
+
+        // Redirigir al listado
+        header('Location: /index.php?action=index&created=1');
+        exit;
+    }
+
+    // Acción: eliminar usuario
+    public function delete(): void {
+        $id = (int)($_GET['id'] ?? 0);
+
+        if ($id &lt;= 0) {
+            header('Location: /index.php');
+            exit;
+        }
+
+        $this-&gt;userModel-&gt;delete($id);
+        header('Location: /index.php?action=index&deleted=1');
+        exit;
+    }
+}</code></pre>
+
+    <h3>views/users/list.php — La Vista</h3>
+
+<pre><code class="language-php">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;Lista de Usuarios&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+&lt;?php include __DIR__ . '/../layout/header.php'; ?&gt;
+
+&lt;main&gt;
+  &lt;div style="display:flex; justify-content:space-between; align-items:center;"&gt;
+    &lt;h1&gt;Usuarios&lt;/h1&gt;
+    &lt;a href="/index.php?action=create" class="btn"&gt;+ Nuevo usuario&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;?php if (isset($_GET['created'])): ?&gt;
+    &lt;div class="alerta-exito"&gt;✅ Usuario creado correctamente.&lt;/div&gt;
+  &lt;?php endif; ?&gt;
+
+  &lt;?php if (empty($usuarios)): ?&gt;
+    &lt;p&gt;No hay usuarios registrados todavía.&lt;/p&gt;
+  &lt;?php else: ?&gt;
+    &lt;table&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th&gt;ID&lt;/th&gt;
+          &lt;th&gt;Nombre&lt;/th&gt;
+          &lt;th&gt;Email&lt;/th&gt;
+          &lt;th&gt;Registro&lt;/th&gt;
+          &lt;th&gt;Acciones&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;?php foreach ($usuarios as $usuario): ?&gt;
+          &lt;tr&gt;
+            &lt;td&gt;&lt;?= $usuario['id'] ?&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;?= htmlspecialchars($usuario['nombre']) ?&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;?= htmlspecialchars($usuario['email']) ?&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;?= $usuario['created_at'] ?&gt;&lt;/td&gt;
+            &lt;td&gt;
+              &lt;a href="/index.php?action=edit&amp;id=&lt;?= $usuario['id'] ?&gt;"&gt;Editar&lt;/a&gt;
+              &lt;a href="/index.php?action=delete&amp;id=&lt;?= $usuario['id'] ?&gt;"
+                 onclick="return confirm('¿Eliminar este usuario?')"
+                 style="color:red;"&gt;Eliminar&lt;/a&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;?php endforeach; ?&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;?php endif; ?&gt;
+&lt;/main&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h3>index.php — El Router (Front Controller)</h3>
+
+<pre><code class="language-php">&lt;?php
+// index.php — Router principal
+// Todas las peticiones pasan por aquí
+// URL: /index.php?action=index  → muestra la lista
+// URL: /index.php?action=create → muestra el formulario
+
+require_once 'controllers/UserController.php';
+
+// Obtener la acción de la URL (por defecto: index)
+$action = $_GET['action'] ?? 'index';
+
+// Instanciar el controlador
+$controller = new UserController();
+
+// Enrutar a la acción correcta
+switch ($action) {
+    case 'index':
+        $controller-&gt;index();
+        break;
+    case 'create':
+        $controller-&gt;create();
+        break;
+    case 'store':
+        $controller-&gt;store();
+        break;
+    case 'delete':
+        $controller-&gt;delete();
+        break;
+    default:
+        // 404: acción no encontrada
+        http_response_code(404);
+        echo "&lt;h1&gt;404 — Página no encontrada&lt;/h1&gt;";
+}</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. FLUJO DE UNA PETICIÓN
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Flujo completo de una petición</h2>
+
+    <div class="note">
+      <strong>📌 Ejemplo: el usuario visita <code>http://localhost/index.php?action=index</code></strong>
+    </div>
+
+    <ol style="line-height:2.2;">
+      <li>
+        <strong>Browser → index.php</strong><br>
+        El navegador hace una petición HTTP GET a <code>/index.php?action=index</code>.
+      </li>
+      <li>
+        <strong>index.php (Router)</strong><br>
+        Lee <code>$_GET['action'] = 'index'</code>, instancia <code>UserController</code> y llama a <code>$controller->index()</code>.
+      </li>
+      <li>
+        <strong>UserController::index() (Controller)</strong><br>
+        Llama a <code>$this->userModel->getAll()</code> para obtener los datos.
+      </li>
+      <li>
+        <strong>User::getAll() (Model)</strong><br>
+        Ejecuta <code>SELECT * FROM usuarios</code> contra PostgreSQL y devuelve un array de usuarios.
+      </li>
+      <li>
+        <strong>Controller (de vuelta)</strong><br>
+        Recibe el array <code>$usuarios</code> y hace <code>require 'views/users/list.php'</code>.
+      </li>
+      <li>
+        <strong>views/users/list.php (View)</strong><br>
+        PHP itera sobre <code>$usuarios</code> con <code>foreach</code> y genera el HTML de la tabla.
+      </li>
+      <li>
+        <strong>HTML → Browser</strong><br>
+        El servidor envía el HTML generado al navegador, que lo muestra al usuario.
+      </li>
+    </ol>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         9. BUENAS PRÁCTICAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">9. Buenas prácticas</h2>
+
+    <ul>
+      <li><strong>Un archivo por clase:</strong> <code>User.php</code> contiene solo la clase <code>User</code>.</li>
+      <li><strong>Nombres descriptivos:</strong> <code>UserController</code>, no <code>UC</code> ni <code>Controller1</code>.</li>
+      <li><strong>Separación estricta:</strong> si estás poniendo SQL en una Vista o HTML en un Modelo, algo está mal.</li>
+      <li><strong>Redirigir tras POST:</strong> siempre redirigir después de procesar un formulario (<em>Post/Redirect/Get pattern</em>).</li>
+      <li><strong>Validar en el Controlador:</strong> valida los datos de entrada antes de pasarlos al Modelo.</li>
+      <li><strong>Prepared statements siempre:</strong> el Modelo nunca debe concatenar variables en SQL.</li>
+    </ul>
+
+    <div class="tip">
+      <strong>🚀 Siguiente paso</strong>
+      Una vez que dominas el MVC básico, puedes explorar frameworks PHP que
+      implementan MVC de forma robusta: <strong>Laravel</strong> (el más popular),
+      <strong>Symfony</strong> o <strong>CodeIgniter</strong>.
+    </div>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+</body>
+</html>

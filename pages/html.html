@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <main class="content">
+
+    <div class="page-header">
+      <h1>🌐 HTML</h1>
+      <p class="page-intro">
+        HTML (<em>HyperText Markup Language</em>) es el lenguaje que define la
+        <strong>estructura</strong> y el <strong>contenido</strong> de cualquier
+        página web. Sin HTML no existe la web.
+      </p>
+    </div>
+
+    <!-- 1. QUÉ ES HTML -->
+    <h2 class="section-title">1. ¿Qué es HTML?</h2>
+    <p>
+      HTML es un <strong>lenguaje de marcado</strong>, no un lenguaje de programación.
+      No tiene lógica (bucles, condiciones…); simplemente describe <em>qué hay</em>
+      en la página: un título, un párrafo, una imagen, un formulario…
+    </p>
+    <p>
+      El navegador lee el archivo HTML y lo convierte en la pantalla visual.
+      Cada elemento se define con <strong>etiquetas</strong> de la forma
+      <code>&lt;etiqueta&gt;contenido&lt;/etiqueta&gt;</code>.
+    </p>
+    <div class="note">
+      <strong>📌 Dato clave</strong>
+      HTML fue creado por Tim Berners-Lee en 1989 como base de la World Wide Web.
+      La "H" de <em>HyperText</em> hace referencia a los hipervínculos que conectan documentos.
+    </div>
+
+    <!-- 2. ESTRUCTURA BÁSICA -->
+    <h2 class="section-title">2. Estructura básica de un documento HTML</h2>
+    <p>
+      Todo documento HTML válido debe tener esta estructura mínima.
+      Guárdalo como <code>index.html</code> y ábrelo en el navegador.
+    </p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+  &lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport"
+          content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Mi Primera Página&lt;/title&gt;
+    &lt;link rel="stylesheet" href="estilos.css"&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;h1&gt;¡Hola, mundo!&lt;/h1&gt;
+    &lt;p&gt;Esto es un párrafo.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <h1>¡Hola, mundo!</h1>
+          <p>Esto es un párrafo.</p>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Etiqueta</th><th>Función</th></tr></thead>
+      <tbody>
+        <tr><td><code>&lt;!DOCTYPE html&gt;</code></td><td>Declara que es HTML5 (siempre la primera línea)</td></tr>
+        <tr><td><code>&lt;html lang="es"&gt;</code></td><td>Elemento raíz; <code>lang</code> ayuda al SEO y accesibilidad</td></tr>
+        <tr><td><code>&lt;head&gt;</code></td><td>Metadatos (no se muestra en pantalla)</td></tr>
+        <tr><td><code>&lt;meta charset="UTF-8"&gt;</code></td><td>Soporte para acentos y caracteres especiales</td></tr>
+        <tr><td><code>&lt;meta name="viewport"&gt;</code></td><td>Hace la página adaptable a móviles</td></tr>
+        <tr><td><code>&lt;title&gt;</code></td><td>Texto de la pestaña del navegador</td></tr>
+        <tr><td><code>&lt;body&gt;</code></td><td>Todo el contenido visible de la página</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 3. INDEX.HTML COMO PÁGINA DE ENTRADA -->
+    <h2 class="section-title">3. index.html — La página de entrada</h2>
+
+    <p>
+      Cuando alguien visita tu web (por ejemplo <code>http://servidor.uab.cat/tu-carpeta/</code>),
+      el servidor busca automáticamente un archivo llamado <strong><code>index.html</code></strong>
+      (o <code>index.php</code>) en esa carpeta y lo sirve como página principal.
+      <strong>No hace falta indicarlo en la URL</strong> — el servidor lo encuentra solo.
+    </p>
+
+    <div class="note">
+      <strong>📌 ¿Por qué se llama index?</strong>
+      Es una convención histórica: el fichero <em>índice</em> de un directorio.
+      Todos los servidores web (Apache, Nginx…) buscan este nombre por defecto.
+      Si no existe, el servidor puede mostrar un error 403 o listar los archivos del directorio.
+    </div>
+
+    <p>Estructura típica de un proyecto sencillo:</p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Estructura de archivos</p>
+<pre><code class="language-html">mi-proyecto/
+├── index.html        ← página principal
+├── about.html        ← página "Sobre nosotros"
+├── contacto.html     ← página de contacto
+├── css/
+│   └── estilos.css
+└── img/
+    └── logo.png</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Cómo enlazar entre páginas</p>
+        <div class="preview-pane">
+          <p style="font-size:.85rem;color:#475569;margin:0 0 8px;">Desde <strong>index.html</strong>:</p>
+          <nav style="display:flex;flex-direction:column;gap:4px;">
+            <a href="#">← estás aquí (index.html)</a>
+            <a href="#">about.html</a>
+            <a href="#">contacto.html</a>
+          </nav>
+          <p style="font-size:.8rem;color:#94a3b8;margin:8px 0 0;">Los links son <strong>relativos</strong>: no hacen falta rutas absolutas.</p>
+        </div>
+      </div>
+    </div>
+
+    <p>Para navegar entre páginas usa el atributo <code>href</code> con la <strong>ruta relativa</strong>:</p>
+
+<pre><code class="language-html">&lt;!-- Desde index.html, enlazar a about.html (misma carpeta) --&gt;
+&lt;a href="about.html"&gt;Sobre nosotros&lt;/a&gt;
+
+&lt;!-- Enlazar a un archivo en una subcarpeta --&gt;
+&lt;a href="pages/contacto.html"&gt;Contacto&lt;/a&gt;
+
+&lt;!-- Subir una carpeta y luego entrar en otra --&gt;
+&lt;a href="../index.html"&gt;Volver al inicio&lt;/a&gt;
+
+&lt;!-- Enlace a una sección dentro de la misma página (ancla) --&gt;
+&lt;a href="#contacto"&gt;Ir a contacto&lt;/a&gt;
+&lt;!-- ... más abajo en el mismo archivo: --&gt;
+&lt;h2 id="contacto"&gt;Contacto&lt;/h2&gt;</code></pre>
+
+    <div class="tip">
+      <strong>✅ ¿Cuándo pasar de index.html a index.php?</strong>
+      Mientras tu página sea <strong>estática</strong> (solo muestra información fija),
+      usa <code>.html</code>. En el momento que necesites lógica de servidor
+      — procesar formularios, consultar la base de datos, mostrar datos dinámicos —
+      renombra el archivo a <code>index.php</code> y empieza a usar PHP.
+      El servidor ejecutará el código PHP antes de enviar el HTML al navegador.
+      Ver guía de <a href="php.html">PHP</a> para más detalles.
+    </div>
+
+    <!-- 4. TÍTULOS Y PÁRRAFOS -->
+    <h2 class="section-title">4. Títulos y párrafos</h2><!-- renombrado -->
+    <p>
+      HTML tiene 6 niveles de títulos (<code>h1</code> a <code>h6</code>). Usa
+      <code>h1</code> solo una vez por página (es el título principal).
+      Los párrafos van dentro de <code>&lt;p&gt;</code>.
+    </p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;h1&gt;Título principal (solo uno)&lt;/h1&gt;
+&lt;h2&gt;Sección&lt;/h2&gt;
+&lt;h3&gt;Subsección&lt;/h3&gt;
+&lt;h4&gt;Nivel 4&lt;/h4&gt;
+
+&lt;p&gt;Primer párrafo de texto.&lt;/p&gt;
+&lt;p&gt;Segundo párrafo. &lt;strong&gt;Negrita&lt;/strong&gt;
+   y &lt;em&gt;cursiva&lt;/em&gt;.&lt;/p&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <h1>Título principal (solo uno)</h1>
+          <h2>Sección</h2>
+          <h3>Subsección</h3>
+          <h4>Nivel 4</h4>
+          <p>Primer párrafo de texto.</p>
+          <p>Segundo párrafo. <strong>Negrita</strong> y <em>cursiva</em>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. ENLACES E IMÁGENES -->
+    <h2 class="section-title">5. Enlaces e imágenes</h2>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;!-- Enlace a otra página --&gt;
+&lt;a href="about.html"&gt;Sobre nosotros&lt;/a&gt;
+
+&lt;!-- Enlace externo (se abre en nueva pestaña) --&gt;
+&lt;a href="https://ejemplo.com" target="_blank"
+   rel="noopener"&gt;Visitar ejemplo.com&lt;/a&gt;
+
+&lt;!-- Imagen local --&gt;
+&lt;img src="fotos/portada.jpg"
+     alt="Descripción de la imagen"
+     width="300"&gt;
+
+&lt;!-- Imagen con enlace --&gt;
+&lt;a href="galeria.html"&gt;
+  &lt;img src="miniatura.jpg" alt="Ver galería"&gt;
+&lt;/a&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <p><a href="#">Sobre nosotros</a></p>
+          <p><a href="#">Visitar ejemplo.com ↗</a></p>
+          <img src="https://via.placeholder.com/200x80?text=imagen.jpg" alt="Descripción" style="max-width:100%;border:1px solid #e2e8f0;border-radius:4px;">
+          <p style="font-size:.8rem;color:#64748b;margin-top:4px;">↑ Imagen con src y alt</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="warning">
+      <strong>⚠️ El atributo <code>alt</code> es obligatorio</strong>
+      Describe la imagen para usuarios con discapacidad visual y para el SEO.
+      Si la imagen es puramente decorativa, usa <code>alt=""</code>.
+    </div>
+
+    <!-- 5. LISTAS -->
+    <h2 class="section-title">6. Listas</h2>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;!-- Lista desordenada (viñetas) --&gt;
+&lt;ul&gt;
+  &lt;li&gt;Manzana&lt;/li&gt;
+  &lt;li&gt;Banana&lt;/li&gt;
+  &lt;li&gt;Naranja&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Lista ordenada (números) --&gt;
+&lt;ol&gt;
+  &lt;li&gt;Paso 1: Abrir el editor&lt;/li&gt;
+  &lt;li&gt;Paso 2: Escribir el código&lt;/li&gt;
+  &lt;li&gt;Paso 3: Guardar y probar&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;!-- Lista anidada --&gt;
+&lt;ul&gt;
+  &lt;li&gt;Frontend
+    &lt;ul&gt;
+      &lt;li&gt;HTML&lt;/li&gt;
+      &lt;li&gt;CSS&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Backend&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <ul><li>Manzana</li><li>Banana</li><li>Naranja</li></ul>
+          <ol><li>Paso 1: Abrir el editor</li><li>Paso 2: Escribir el código</li><li>Paso 3: Guardar y probar</li></ol>
+          <ul><li>Frontend<ul><li>HTML</li><li>CSS</li></ul></li><li>Backend</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. TABLAS -->
+    <h2 class="section-title">7. Tablas</h2>
+    <p>
+      Las tablas muestran datos tabulares (no uses tablas para hacer layout —
+      para eso usa CSS Flexbox/Grid).
+    </p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;table&gt;
+  &lt;!-- Cabecera --&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Nombre&lt;/th&gt;
+      &lt;th&gt;Edad&lt;/th&gt;
+      &lt;th&gt;Ciudad&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;!-- Cuerpo --&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Ana García&lt;/td&gt;
+      &lt;td&gt;22&lt;/td&gt;
+      &lt;td&gt;Barcelona&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Marc López&lt;/td&gt;
+      &lt;td&gt;24&lt;/td&gt;
+      &lt;td&gt;Valencia&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <table>
+            <thead><tr><th>Nombre</th><th>Edad</th><th>Ciudad</th></tr></thead>
+            <tbody>
+              <tr><td>Ana García</td><td>22</td><td>Barcelona</td></tr>
+              <tr><td>Marc López</td><td>24</td><td>Valencia</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. FORMULARIOS -->
+    <h2 class="section-title">8. Formularios</h2>
+    <p>
+      Los formularios recogen datos del usuario y los envían al servidor.
+      El atributo <code>action</code> indica el archivo PHP que los procesa,
+      y <code>method</code> el método HTTP (<code>GET</code> o <code>POST</code>).
+    </p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;form action="procesar.php" method="POST"&gt;
+
+  &lt;!-- Campo de texto --&gt;
+  &lt;label for="nombre"&gt;Nombre:&lt;/label&gt;
+  &lt;input type="text" id="nombre" name="nombre"
+         placeholder="Tu nombre" required&gt;
+
+  &lt;!-- Campo email --&gt;
+  &lt;label for="email"&gt;Email:&lt;/label&gt;
+  &lt;input type="email" id="email" name="email"
+         placeholder="correo@ejemplo.com" required&gt;
+
+  &lt;!-- Contraseña --&gt;
+  &lt;label for="pass"&gt;Contraseña:&lt;/label&gt;
+  &lt;input type="password" id="pass" name="pass"&gt;
+
+  &lt;!-- Selector --&gt;
+  &lt;label for="ciudad"&gt;Ciudad:&lt;/label&gt;
+  &lt;select id="ciudad" name="ciudad"&gt;
+    &lt;option value=""&gt;-- Elige --&lt;/option&gt;
+    &lt;option value="bcn"&gt;Barcelona&lt;/option&gt;
+    &lt;option value="mad"&gt;Madrid&lt;/option&gt;
+  &lt;/select&gt;
+
+  &lt;!-- Área de texto --&gt;
+  &lt;label for="msg"&gt;Mensaje:&lt;/label&gt;
+  &lt;textarea id="msg" name="msg" rows="3"
+            placeholder="Escribe aquí..."&gt;&lt;/textarea&gt;
+
+  &lt;!-- Botón de envío --&gt;
+  &lt;input type="submit" value="Enviar"&gt;
+
+&lt;/form&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <form onsubmit="return false">
+            <label>Nombre:</label>
+            <input type="text" placeholder="Tu nombre">
+            <label>Email:</label>
+            <input type="email" placeholder="correo@ejemplo.com">
+            <label>Contraseña:</label>
+            <input type="password" placeholder="••••••">
+            <label>Ciudad:</label>
+            <select><option>-- Elige --</option><option>Barcelona</option><option>Madrid</option></select>
+            <label>Mensaje:</label>
+            <textarea rows="2" placeholder="Escribe aquí..."></textarea>
+            <input type="submit" value="Enviar">
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>📌 GET vs POST</strong>
+      Usa <code>method="GET"</code> para búsquedas (los datos van en la URL).
+      Usa <code>method="POST"</code> para enviar datos sensibles o crear/modificar recursos (los datos van en el cuerpo de la petición, no visibles en la URL).
+    </div>
+
+    <!-- 8. DIV Y SPAN -->
+    <h2 class="section-title">9. div y span — Contenedores genéricos</h2>
+    <p>
+      <code>&lt;div&gt;</code> es un contenedor de bloque (ocupa toda la línea).
+      <code>&lt;span&gt;</code> es un contenedor en línea (solo ocupa lo que necesita).
+      Se usan cuando ningún elemento semántico encaja.
+    </p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;!-- div: agrupa elementos para darles estilo --&gt;
+&lt;div class="tarjeta"&gt;
+  &lt;h3&gt;Título de la tarjeta&lt;/h3&gt;
+  &lt;p&gt;Descripción de la tarjeta.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;!-- span: estiliza parte de un texto --&gt;
+&lt;p&gt;
+  El precio es
+  &lt;span style="color:red; font-weight:bold;"&gt;
+    24,99 €
+  &lt;/span&gt;
+  (IVA incluido).
+&lt;/p&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane">
+          <div style="border:1px solid #e2e8f0;border-radius:6px;padding:10px;margin-bottom:10px;">
+            <h3 style="margin:0 0 4px;font-size:1rem;">Título de la tarjeta</h3>
+            <p style="margin:0;font-size:.9rem;">Descripción de la tarjeta.</p>
+          </div>
+          <p>El precio es <span style="color:red;font-weight:bold;">24,99 €</span> (IVA incluido).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. HTML SEMÁNTICO -->
+    <h2 class="section-title">10. HTML Semántico</h2>
+    <p>
+      HTML5 introdujo etiquetas con <strong>significado</strong>. En lugar de
+      usar <code>&lt;div&gt;</code> para todo, usa el elemento que describe
+      mejor lo que contiene. Mejora el SEO y la accesibilidad.
+    </p>
+
+    <div class="code-preview">
+      <div>
+        <p class="preview-label">Código</p>
+<pre><code class="language-html">&lt;body&gt;
+
+  &lt;!-- Cabecera del sitio (logo, nav) --&gt;
+  &lt;header&gt;
+    &lt;nav&gt;
+      &lt;a href="/"&gt;Inicio&lt;/a&gt;
+      &lt;a href="/about"&gt;Sobre nosotros&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/header&gt;
+
+  &lt;!-- Contenido principal --&gt;
+  &lt;main&gt;
+
+    &lt;!-- Sección temática --&gt;
+    &lt;section&gt;
+      &lt;h2&gt;Últimas noticias&lt;/h2&gt;
+
+      &lt;!-- Contenido independiente (artículo) --&gt;
+      &lt;article&gt;
+        &lt;h3&gt;Título del artículo&lt;/h3&gt;
+        &lt;p&gt;Contenido del artículo...&lt;/p&gt;
+      &lt;/article&gt;
+    &lt;/section&gt;
+
+    &lt;!-- Contenido secundario --&gt;
+    &lt;aside&gt;
+      &lt;h3&gt;Relacionados&lt;/h3&gt;
+    &lt;/aside&gt;
+
+  &lt;/main&gt;
+
+  &lt;!-- Pie de página --&gt;
+  &lt;footer&gt;
+    &lt;p&gt;&amp;copy; 2025 Mi Sitio Web&lt;/p&gt;
+  &lt;/footer&gt;
+
+&lt;/body&gt;</code></pre>
+      </div>
+      <div>
+        <p class="preview-label">Vista previa</p>
+        <div class="preview-pane" style="padding:.6rem;">
+          <div style="background:#dbeafe;border-radius:4px;padding:6px 10px;margin-bottom:6px;font-size:.8rem;">
+            <strong>header</strong> → <a href="#">Inicio</a> · <a href="#">Sobre nosotros</a>
+          </div>
+          <div style="background:#dcfce7;border-radius:4px;padding:6px 10px;margin-bottom:6px;font-size:.8rem;">
+            <strong>main &gt; section</strong><br>
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:3px;padding:4px 8px;margin-top:4px;">
+              <strong>article</strong>: Título del artículo
+            </div>
+          </div>
+          <div style="background:#fef3c7;border-radius:4px;padding:6px 10px;margin-bottom:6px;font-size:.8rem;">
+            <strong>aside</strong>: Relacionados
+          </div>
+          <div style="background:#f1f5f9;border-radius:4px;padding:6px 10px;font-size:.8rem;">
+            <strong>footer</strong>: © 2025 Mi Sitio Web
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead><tr><th>Etiqueta</th><th>Uso</th><th>Equivalente div con clase</th></tr></thead>
+      <tbody>
+        <tr><td><code>&lt;header&gt;</code></td><td>Cabecera del sitio o sección</td><td><code>&lt;div class="header"&gt;</code></td></tr>
+        <tr><td><code>&lt;nav&gt;</code></td><td>Menú de navegación</td><td><code>&lt;div class="nav"&gt;</code></td></tr>
+        <tr><td><code>&lt;main&gt;</code></td><td>Contenido principal (único por página)</td><td><code>&lt;div class="main"&gt;</code></td></tr>
+        <tr><td><code>&lt;section&gt;</code></td><td>Sección temática con encabezado</td><td><code>&lt;div class="section"&gt;</code></td></tr>
+        <tr><td><code>&lt;article&gt;</code></td><td>Contenido independiente y reutilizable</td><td><code>&lt;div class="article"&gt;</code></td></tr>
+        <tr><td><code>&lt;aside&gt;</code></td><td>Contenido lateral relacionado</td><td><code>&lt;div class="aside"&gt;</code></td></tr>
+        <tr><td><code>&lt;footer&gt;</code></td><td>Pie de página</td><td><code>&lt;div class="footer"&gt;</code></td></tr>
+      </tbody>
+    </table>
+
+    <!-- 10. BUENAS PRÁCTICAS -->
+    <h2 class="section-title">11. Buenas prácticas en HTML</h2>
+    <ul>
+      <li>Siempre incluye <code>&lt;!DOCTYPE html&gt;</code> al inicio.</li>
+      <li>Usa el atributo <code>lang</code> en <code>&lt;html&gt;</code>.</li>
+      <li>Siempre incluye <code>alt</code> en las imágenes.</li>
+      <li>Usa etiquetas semánticas en lugar de <code>&lt;div&gt;</code> para todo.</li>
+      <li>Usa <code>charset="UTF-8"</code> para soporte de acentos.</li>
+      <li>Los nombres de archivos y carpetas: minúsculas, sin espacios, sin acentos (<code>sobre-nosotros.html</code>, no <code>Sobre Nosotros.html</code>).</li>
+      <li>Indentar el código con 2 o 4 espacios consistentemente.</li>
+      <li>Nunca uses HTML para dar estilo (atributos <code>color</code>, <code>bgcolor</code>, <code>align</code> son obsoletos — usa CSS).</li>
+      <li>Valida tu HTML con el validador oficial: <strong>validator.w3.org</strong></li>
+    </ul>
+
+    <div class="tip">
+      <strong>✅ Regla de oro</strong>
+      HTML = qué es la información. CSS = cómo se ve. JavaScript = qué hace.
+      Mantener esta separación de responsabilidades hace el código mucho más fácil de mantener.
+    </div>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+</body>
+</html>

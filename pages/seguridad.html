@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguridad — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <main class="content">
+
+    <div class="page-header" style="border-left-color:#ef4444;">
+      <h1>🔒 Seguridad</h1>
+      <p class="page-intro">
+        La seguridad no es una opción ni algo que se añade al final.
+        Es un hábito que se practica desde la primera línea de código.
+        Aquí verás los ataques más comunes y cómo prevenirlos.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿POR QUÉ IMPORTA LA SEGURIDAD?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Por qué importa la seguridad?</h2>
+
+    <p>
+      La organización <strong>OWASP</strong> (Open Web Application Security Project)
+      publica cada pocos años el <em>OWASP Top 10</em>: la lista de los diez riesgos
+      de seguridad más críticos en aplicaciones web. Los primeros puestos están
+      ocupados consistentemente por ataques que se previenen con buenas prácticas
+      básicas de programación.
+    </p>
+
+    <table>
+      <thead><tr><th>#</th><th>Riesgo OWASP Top 10 (2021)</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>A01</td><td>Broken Access Control</td><td>Un usuario normal accede a datos de otro</td></tr>
+        <tr><td>A02</td><td>Cryptographic Failures</td><td>Contraseñas guardadas en texto plano</td></tr>
+        <tr><td>A03</td><td><strong>Injection (SQL, OS…)</strong></td><td>SQL Injection en un formulario de login</td></tr>
+        <tr><td>A07</td><td><strong>Identification &amp; Authentication Failures</strong></td><td>Contraseñas débiles, sesiones mal gestionadas</td></tr>
+        <tr><td>A03 (2017)</td><td><strong>XSS</strong></td><td>Inyectar JavaScript malicioso en la página</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>📌 Referencia oficial</strong>
+      Consulta la lista completa en <strong>owasp.org/Top10</strong>.
+      Es la referencia estándar de la industria para la seguridad web.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. NUNCA CREDENCIALES EN EL CÓDIGO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Nunca credenciales en el código</h2>
+
+    <p>
+      El error más frecuente de los desarrolladores principiantes es escribir
+      contraseñas, claves API y tokens directamente en el código fuente.
+      Si ese código llega a un repositorio público (o incluso privado mal configurado),
+      las credenciales quedan expuestas.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Incorrecto — credenciales en el código fuente</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: contraseña en texto plano en el código
+// Si este archivo se sube a GitHub, cualquiera tiene acceso total a la BD
+$pdo = new PDO(
+    'pgsql:host=localhost;dbname=tienda',
+    'postgres',
+    'mi-contrasena-secreta'
+);
+
+// ❌ MAL: clave de API externa en el código
+$api_key = 'clave-externa-secreta-hardcoded'; // ← visible para todos</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Correcto — variables de entorno con .env</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-bash"># .env  ← este archivo NUNCA se sube a Git (añádelo a .gitignore)
+DB_HOST=localhost
+DB_NAME=tienda
+DB_USER=postgres
+DB_PASSWORD=mi-contrasena-secreta
+SERVICIO_API_KEY=clave-externa-secreta</code></pre>
+<pre style="margin:.25rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: se leen de variables de entorno, no están en el código
+$pass    = getenv('DB_PASSWORD');
+$api_key = getenv('SERVICIO_API_KEY');</code></pre>
+    </div>
+
+    <h3>Proteger el .env con .gitignore</h3>
+    <p>
+      Lo más importante: añade <code>.env</code> a tu <code>.gitignore</code>
+      <strong>antes de hacer el primer commit</strong>.
+    </p>
+
+<pre><code class="language-bash"># .gitignore
+.env
+.env.local
+.env.production
+vendor/
+*.log</code></pre>
+
+    <div class="warning">
+      <strong>⚠️ Si ya subiste el .env a Git</strong>
+      Borrarlo del repositorio no es suficiente: el historial de commits guarda
+      el contenido antiguo. Debes <strong>revocar y regenerar todas las credenciales
+      expuestas</strong> inmediatamente.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. SQL INJECTION
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. SQL Injection</h2>
+
+    <p>
+      La <strong>inyección SQL</strong> ocurre cuando datos introducidos por el usuario
+      se concatenan directamente en una consulta SQL, permitiendo al atacante modificar
+      la lógica de la consulta.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Código vulnerable — NUNCA hagas esto</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ VULNERABLE: los datos del usuario se pegan directamente en el SQL
+$email    = $_POST['email'];     // atacante escribe: ' OR '1'='1
+$password = $_POST['password'];  // atacante escribe: cualquier_cosa
+
+// La consulta resultante sería:
+// SELECT * FROM usuarios WHERE email = '' OR '1'='1' AND password = 'x'
+// '1'='1' siempre es TRUE → el atacante entra sin contraseña válida
+$query = "SELECT * FROM usuarios WHERE email = '$email' AND password = '$password'";
+$result = $pdo-&gt;query($query);  // ¡VULNERABLE!</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Código seguro — Prepared Statements (siempre)</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ SEGURO: PDO separa el SQL del dato, imposible inyectar
+$email    = $_POST['email'];
+$password = $_POST['password'];
+
+// Los :email y :password son marcadores de posición (placeholders)
+// PDO los envía al motor de BD por separado, nunca como SQL
+$stmt = $pdo-&gt;prepare("SELECT * FROM usuarios WHERE email = :email");
+$stmt-&gt;execute([':email' =&gt; $email]);
+$usuario = $stmt-&gt;fetch();
+
+// Verificar la contraseña contra el hash almacenado
+if ($usuario &amp;&amp; password_verify($password, $usuario['password_hash'])) {
+    echo "Login correcto. Bienvenido, " . htmlspecialchars($usuario['nombre']);
+} else {
+    echo "Email o contraseña incorrectos.";  // nunca decir cuál de los dos
+}</code></pre>
+    </div>
+
+    <p>
+      Con los prepared statements, PDO <strong>separa completamente el SQL del dato</strong>.
+      Aunque el atacante escriba <code>' OR '1'='1</code>, ese valor se trata
+      literalmente como una cadena de texto y nunca es interpretado como SQL.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. XSS — CROSS-SITE SCRIPTING
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. XSS — Cross-Site Scripting</h2>
+
+    <p>
+      XSS ocurre cuando la aplicación muestra en la página HTML datos introducidos
+      por el usuario <strong>sin escaparlos</strong>. El atacante puede inyectar
+      código JavaScript malicioso que se ejecuta en el navegador de otros usuarios:
+      robar cookies de sesión, redirigir a páginas de phishing, etc.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Código vulnerable — inyección de HTML/JS desde la URL</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// URL de ataque: pagina.php?nombre=&lt;script&gt;alert('XSS')&lt;/script&gt;
+// ❌ MAL: se imprime directamente sin escapar
+$nombre = $_GET['nombre'];
+echo "Hola, $nombre";  // ← el JS del atacante se ejecuta en el navegador</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Código seguro — htmlspecialchars() siempre que muestres datos de usuario</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: htmlspecialchars convierte los caracteres especiales en entidades HTML
+// &lt; → &amp;lt;   &gt; → &amp;gt;   &amp; → &amp;amp;   " → &amp;quot;   ' → &amp;#039;
+$nombre = $_GET['nombre'] ?? '';
+echo "Hola, " . htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
+// Si el atacante envía &lt;script&gt;...&lt;/script&gt;, se muestra como texto inofensivo
+
+// Para mostrar datos de la BD también:
+echo htmlspecialchars($usuario['nombre'], ENT_QUOTES, 'UTF-8');</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>📌 Regla sencilla</strong>
+      Cada vez que uses <code>echo</code> para mostrar un valor que viene
+      del usuario (formulario, URL, base de datos), envuélvelo en
+      <code>htmlspecialchars()</code>. Sin excepciones.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. CONTRASEÑAS EN LA BASE DE DATOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Contraseñas en la base de datos</h2>
+
+    <p>
+      Nunca, bajo ninguna circunstancia, guardes contraseñas en texto plano en
+      la base de datos. Si alguien accede a la base de datos, obtendría directamente
+      las contraseñas de todos los usuarios.
+    </p>
+    <p>
+      La solución es el <strong>hashing</strong>: una función matemática de un solo
+      sentido que transforma la contraseña en una cadena irreversible. PHP incluye
+      <code>password_hash()</code> con bcrypt, que es el estándar actual.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Incorrecto — contraseña en texto plano o con MD5/SHA1</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: texto plano
+$stmt-&gt;execute([':pass' =&gt; $password]);
+
+// ❌ MAL: MD5 o SHA1 son algoritmos rotos para contraseñas
+$stmt-&gt;execute([':pass' =&gt; md5($password)]);
+$stmt-&gt;execute([':pass' =&gt; sha1($password)]);</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Correcto — password_hash() con bcrypt</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ════════════════════════════════════
+// REGISTRO — guardar nueva contraseña
+// ════════════════════════════════════
+$password = $_POST['password'];
+
+// password_hash genera automáticamente un salt aleatorio
+// El resultado es algo como: $2y$10$eImiTXuWVxfM37uY4JANjQ...
+$hash = password_hash($password, PASSWORD_BCRYPT);
+
+$stmt = $pdo-&gt;prepare(
+    "INSERT INTO usuarios (nombre, email, password_hash) VALUES (:n, :e, :h)"
+);
+$stmt-&gt;execute([':n' =&gt; $nombre, ':e' =&gt; $email, ':h' =&gt; $hash]);
+
+// ════════════════════════════════════
+// LOGIN — verificar contraseña
+// ════════════════════════════════════
+$email    = trim($_POST['email']    ?? '');
+$password = $_POST['password'] ?? '';
+
+$stmt = $pdo-&gt;prepare("SELECT * FROM usuarios WHERE email = :email AND activo = TRUE");
+$stmt-&gt;execute([':email' =&gt; $email]);
+$usuario = $stmt-&gt;fetch();
+
+// password_verify compara el texto con el hash almacenado
+if ($usuario &amp;&amp; password_verify($password, $usuario['password_hash'])) {
+    // Login correcto: iniciar sesión
+    session_start();
+    session_regenerate_id(true);  // previene session fixation
+    $_SESSION['usuario_id']   = $usuario['id'];
+    $_SESSION['usuario_nombre'] = $usuario['nombre'];
+
+    header('Location: dashboard.php');
+    exit;
+} else {
+    $error = "Email o contraseña incorrectos.";
+}</code></pre>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. VALIDACIÓN Y SANITIZACIÓN DE DATOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Validación y sanitización de datos</h2>
+
+    <p>
+      <strong>Validar</strong> significa comprobar que el dato tiene el formato correcto
+      (un email válido, un número positivo…). <strong>Sanitizar</strong> significa
+      limpiar el dato (eliminar espacios, caracteres extraños…).
+      Siempre valida y sanitiza los datos <em>antes</em> de usarlos o guardarlos.
+    </p>
+
+<pre><code class="language-php">&lt;?php
+// ── Sanitización básica ───────────────────────────────────────
+$nombre = trim($_POST['nombre'] ?? '');          // eliminar espacios al inicio/fin
+$nombre = strip_tags($nombre);                   // eliminar etiquetas HTML
+$email  = trim(strtolower($_POST['email'] ?? '')); // lowercase + trim
+
+// ── Validación con filter_var() ───────────────────────────────
+// Email
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errores[] = "Email no válido.";
+}
+
+// URL
+if (!filter_var($url, FILTER_VALIDATE_URL)) {
+    $errores[] = "URL no válida.";
+}
+
+// Número entero (p. ej: ID desde la URL)
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+if ($id === false || $id === null || $id &lt;= 0) {
+    die("ID no válido.");
+}
+
+// ── Validaciones manuales ─────────────────────────────────────
+if (empty($nombre)) {
+    $errores[] = "El nombre es obligatorio.";
+} elseif (strlen($nombre) &lt; 2 || strlen($nombre) &gt; 100) {
+    $errores[] = "El nombre debe tener entre 2 y 100 caracteres.";
+}
+
+// Edad: debe ser numérica y estar en rango
+$edad = $_POST['edad'] ?? '';
+if (!is_numeric($edad) || (int)$edad &lt; 0 || (int)$edad &gt; 120) {
+    $errores[] = "La edad debe ser un número entre 0 y 120.";
+}
+
+// ── Castings seguros ─────────────────────────────────────────
+$id    = (int)$_GET['id'];          // fuerza a entero (imposible inyección)
+$precio = (float)$_POST['precio'];  // fuerza a decimal</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. CSRF — CROSS-SITE REQUEST FORGERY
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. CSRF — Protección de formularios</h2>
+
+    <p>
+      Un ataque <strong>CSRF</strong> (Cross-Site Request Forgery) engaña al navegador
+      del usuario autenticado para que envíe una petición maliciosa a tu aplicación
+      sin que el usuario lo sepa. Por ejemplo: una web maliciosa hace que el navegador
+      de la víctima envíe un formulario de transferencia de dinero.
+    </p>
+    <p>
+      La defensa estándar es el <strong>token CSRF</strong>: un valor secreto aleatorio
+      incluido en el formulario que el servidor verifica antes de procesar la petición.
+    </p>
+
+<pre><code class="language-php">&lt;?php
+// ── Generar el token CSRF (en el controlador que muestra el formulario) ──
+session_start();
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));  // 64 caracteres aleatorios
+}
+$csrfToken = $_SESSION['csrf_token'];
+?&gt;
+
+&lt;!-- En el HTML del formulario, incluir el token como campo oculto --&gt;
+&lt;form action="procesar.php" method="POST"&gt;
+  &lt;input type="hidden" name="csrf_token" value="&lt;?= htmlspecialchars($csrfToken) ?&gt;"&gt;
+  &lt;!-- resto del formulario --&gt;
+  &lt;button type="submit"&gt;Enviar&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+<pre><code class="language-php">&lt;?php
+// ── Verificar el token CSRF en el procesador ──
+session_start();
+
+$tokenRecibido = $_POST['csrf_token'] ?? '';
+$tokenEsperado = $_SESSION['csrf_token'] ?? '';
+
+// hash_equals previene ataques de tiempo (timing attacks)
+if (!hash_equals($tokenEsperado, $tokenRecibido)) {
+    http_response_code(403);
+    die("Error de seguridad: token CSRF inválido.");
+}
+
+// Si llega aquí, la petición es legítima
+// Procesar el formulario normalmente...</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. CABECERAS DE SEGURIDAD HTTP
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Cabeceras de seguridad HTTP</h2>
+
+    <p>
+      El servidor puede enviar cabeceras HTTP que indican al navegador cómo comportarse
+      de forma más segura. Son una línea de defensa adicional.
+    </p>
+
+<pre><code class="language-php">&lt;?php
+// Añadir estas cabeceras al inicio de cada respuesta HTTP
+// (o configurarlas en el servidor Apache/Nginx)
+
+// Evita que el navegador cargue tu página dentro de un &lt;iframe&gt;
+// (protege contra clickjacking)
+header('X-Frame-Options: DENY');
+
+// Evita que el navegador "adivine" el tipo de contenido
+header('X-Content-Type-Options: nosniff');
+
+// Política de seguridad de contenido: controla qué recursos se pueden cargar
+// (primera línea de defensa contra XSS)
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com");
+
+// Fuerza HTTPS (solo si tienes certificado SSL)
+header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+
+// Controla qué información se envía en el header Referer
+header('Referrer-Policy: strict-origin-when-cross-origin');</code></pre>
+
+    <div class="note">
+      <strong>📌 Configuración alternativa en Apache (.htaccess)</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-apacheconf">&lt;IfModule mod_headers.c&gt;
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+&lt;/IfModule&gt;</code></pre>
+    </div>
+
+    <h2 class="section-title">Resumen: lista de verificación de seguridad</h2>
+    <ul>
+      <li>Usar <strong>prepared statements</strong> para todas las consultas SQL con datos del usuario.</li>
+      <li>Usar <strong>htmlspecialchars()</strong> siempre que se muestren datos del usuario en HTML.</li>
+      <li>Usar <strong>password_hash() / password_verify()</strong> para contraseñas (nunca texto plano, nunca MD5).</li>
+      <li>Guardar credenciales en <strong>variables de entorno</strong> (.env), nunca en el código fuente.</li>
+      <li>Añadir <code>.env</code> al <strong>.gitignore</strong> desde el primer día.</li>
+      <li>Incluir <strong>token CSRF</strong> en todos los formularios POST.</li>
+      <li>Validar y sanitizar <strong>todos</strong> los datos de entrada (formularios, URL, cookies).</li>
+      <li>Añadir <strong>cabeceras de seguridad HTTP</strong> básicas.</li>
+      <li>Usar HTTPS (certificado SSL/TLS) en producción.</li>
+      <li>No mostrar mensajes de error detallados en producción (<code>display_errors = Off</code> en <code>php.ini</code>).</li>
+    </ul>
+
+    <div class="tip">
+      <strong>✅ Clave mental</strong>
+      Cada dato que llega desde fuera (usuario, URL, BD externa) es <em>potencialmente
+      malicioso</em>. Valídalo, sanitízalo y escápalo antes de usarlo.
+    </div>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+</body>
+</html>

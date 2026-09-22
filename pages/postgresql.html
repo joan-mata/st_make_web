@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Base de Datos — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <main class="content">
+
+    <div class="page-header" style="border-left-color:#06b6d4;">
+      <h1>🗄️ Base de Datos</h1>
+      <p class="page-intro">
+        PostgreSQL es un potente sistema de bases de datos relacional de código abierto.
+        Aquí aprenderás a diseñar tablas, escribir SQL y conectar PHP a la base de datos
+        de forma segura.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿QUÉ ES UNA BASE DE DATOS RELACIONAL?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Qué es una base de datos relacional?</h2>
+
+    <p>
+      Una <strong>base de datos relacional</strong> organiza la información en
+      <strong>tablas</strong> con filas y columnas, igual que una hoja de cálculo,
+      pero con la potencia de relacionar tablas entre sí y consultar millones de
+      registros en milisegundos.
+    </p>
+    <p>
+      El lenguaje estándar para interactuar con estas bases de datos es
+      <strong>SQL</strong> (<em>Structured Query Language</em>). Todos los sistemas
+      relacionales (PostgreSQL, MySQL, SQLite, SQL Server…) lo usan con variaciones
+      menores.
+    </p>
+    <p>
+      <strong>PostgreSQL</strong> es uno de los sistemas más completos y fiables:
+      más de 35 años de desarrollo activo, completamente gratuito y de código abierto.
+      Lo usan empresas como Apple, Instagram, Spotify y Reddit.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. CONCEPTOS CLAVE
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Conceptos clave</h2>
+
+    <table>
+      <thead><tr><th>Concepto</th><th>Descripción</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Tabla</strong></td>
+          <td>Colección de datos del mismo tipo</td>
+          <td><code>usuarios</code>, <code>productos</code>, <code>pedidos</code></td>
+        </tr>
+        <tr>
+          <td><strong>Columna (campo)</strong></td>
+          <td>Atributo de cada registro</td>
+          <td><code>nombre</code>, <code>email</code>, <code>precio</code></td>
+        </tr>
+        <tr>
+          <td><strong>Fila (registro)</strong></td>
+          <td>Un elemento concreto de la tabla</td>
+          <td>Un usuario específico</td>
+        </tr>
+        <tr>
+          <td><strong>PRIMARY KEY</strong></td>
+          <td>Identificador único de cada fila (no puede repetirse ni ser NULL)</td>
+          <td><code>id SERIAL PRIMARY KEY</code></td>
+        </tr>
+        <tr>
+          <td><strong>FOREIGN KEY</strong></td>
+          <td>Referencia a la PRIMARY KEY de otra tabla (crea la relación)</td>
+          <td><code>usuario_id REFERENCES usuarios(id)</code></td>
+        </tr>
+        <tr>
+          <td><strong>Índice (INDEX)</strong></td>
+          <td>Estructura que acelera las búsquedas en columnas muy consultadas</td>
+          <td><code>CREATE INDEX ON usuarios(email)</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Ejemplo visual de una tabla <code>usuarios</code>:</p>
+
+    <table>
+      <thead>
+        <tr><th>id (PK)</th><th>nombre</th><th>email</th><th>activo</th><th>created_at</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Ana García</td><td>ana@uni.es</td><td>true</td><td>2025-09-01 10:23</td></tr>
+        <tr><td>2</td><td>Marc López</td><td>marc@uni.es</td><td>true</td><td>2025-09-02 14:05</td></tr>
+        <tr><td>3</td><td>Laia Puig</td><td>laia@uni.es</td><td>false</td><td>2025-09-03 09:17</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. INSTALACIÓN Y HERRAMIENTAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. PostgreSQL: instalación y herramientas</h2>
+
+    <h3>Instalar PostgreSQL</h3>
+    <ul>
+      <li><strong>Windows / macOS:</strong> descarga el instalador desde <strong>postgresql.org/download</strong>. Incluye el servidor y pgAdmin 4.</li>
+      <li><strong>macOS (alternativa):</strong> <code>brew install postgresql@16</code> (con Homebrew).</li>
+      <li><strong>Linux (Ubuntu/Debian):</strong> <code>sudo apt install postgresql postgresql-contrib</code>.</li>
+    </ul>
+
+    <h3>Herramientas principales</h3>
+    <table>
+      <thead><tr><th>Herramienta</th><th>Tipo</th><th>Cuándo usarla</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>pgAdmin 4</strong></td>
+          <td>Interfaz gráfica (GUI)</td>
+          <td>Para explorar tablas, ejecutar SQL visualmente, ver errores</td>
+        </tr>
+        <tr>
+          <td><strong>psql</strong></td>
+          <td>Terminal / CLI</td>
+          <td>Para scripts rápidos, migraciones, administración avanzada</td>
+        </tr>
+        <tr>
+          <td><strong>DBeaver</strong></td>
+          <td>GUI multi-base de datos</td>
+          <td>Alternativa a pgAdmin, soporta PostgreSQL, MySQL, SQLite…</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>📌 Habilitar PDO PostgreSQL en XAMPP</strong>
+      <ol style="margin:.4rem 0 0 1.5rem;">
+        <li>Abre el archivo <code>php.ini</code> (desde el panel de XAMPP → PHP → php.ini).</li>
+        <li>Busca la línea <code>;extension=pdo_pgsql</code>.</li>
+        <li>Quita el punto y coma: <code>extension=pdo_pgsql</code>.</li>
+        <li>Reinicia Apache desde el panel de XAMPP.</li>
+        <li>Verifica con <code>&lt;?php phpinfo(); ?&gt;</code> que aparece "PDO drivers: pgsql".</li>
+      </ol>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. SQL: EL LENGUAJE DE LAS BASES DE DATOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. SQL: el lenguaje de las bases de datos</h2>
+
+    <h3>4.1 CREATE DATABASE y CREATE TABLE</h3>
+    <p>
+      Antes de guardar datos necesitamos definir la <strong>estructura</strong>:
+      qué tablas existen y qué tipo de dato almacena cada columna.
+    </p>
+
+<pre><code class="language-sql">-- Crear la base de datos (desde psql o pgAdmin)
+CREATE DATABASE mi_proyecto
+  WITH ENCODING 'UTF8'
+       LC_COLLATE = 'es_ES.UTF-8'
+       TEMPLATE = template0;
+
+-- Conectarse a la base de datos (en psql)
+\c mi_proyecto
+
+-- ── Tipos de datos más usados en PostgreSQL ──────────────────
+-- SERIAL          → entero auto-incremental (1, 2, 3…)
+-- INTEGER / INT   → número entero
+-- BIGINT          → entero grande (para IDs de tablas muy grandes)
+-- DECIMAL(10,2)   → número decimal (p. ej: precios)
+-- VARCHAR(n)      → texto de longitud máxima n caracteres
+-- TEXT            → texto de longitud ilimitada
+-- BOOLEAN         → true / false
+-- DATE            → solo fecha (2025-09-01)
+-- TIMESTAMP       → fecha y hora (2025-09-01 10:23:45)
+-- UUID            → identificador único universal
+
+-- ── Crear tabla usuarios ──────────────────────────────────────
+CREATE TABLE usuarios (
+    id            SERIAL PRIMARY KEY,
+    nombre        VARCHAR(100) NOT NULL,
+    email         VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    edad          INTEGER      CHECK (edad >= 0 AND edad <= 120),
+    activo        BOOLEAN      DEFAULT TRUE,
+    created_at    TIMESTAMP    DEFAULT NOW()
+);
+
+-- ── Crear tabla posts (con FOREIGN KEY) ───────────────────────
+CREATE TABLE posts (
+    id         SERIAL PRIMARY KEY,
+    titulo     VARCHAR(200) NOT NULL,
+    contenido  TEXT,
+    -- La FK vincula cada post a un usuario existente
+    usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+-- ON DELETE CASCADE: si se elimina un usuario, se eliminan sus posts
+
+-- Ver las tablas creadas (en psql)
+\dt</code></pre>
+
+    <h3>4.2 INSERT — Insertar datos</h3>
+
+<pre><code class="language-sql">-- Insertar un único registro
+INSERT INTO usuarios (nombre, email, password_hash, edad)
+VALUES ('Ana García', 'ana@uni.es', '$2y$10$hash_bcrypt_aqui', 22);
+
+-- Insertar varios registros a la vez
+INSERT INTO usuarios (nombre, email, password_hash) VALUES
+    ('Marc López',  'marc@uni.es',  '$2y$10$hash1'),
+    ('Laia Puig',   'laia@uni.es',  '$2y$10$hash2'),
+    ('Jordi Roca',  'jordi@uni.es', '$2y$10$hash3');
+
+-- Insertar y recuperar el ID generado (útil en PHP)
+INSERT INTO usuarios (nombre, email, password_hash)
+VALUES ('Pedro Gil', 'pedro@uni.es', '$2y$10$hashxyz')
+RETURNING id;   -- PostgreSQL devuelve el id asignado</code></pre>
+
+    <h3>4.3 SELECT — Consultar datos</h3>
+
+<pre><code class="language-sql">-- Todos los registros de la tabla
+SELECT * FROM usuarios;
+
+-- Solo ciertas columnas
+SELECT id, nombre, email FROM usuarios;
+
+-- Filtrar con WHERE
+SELECT * FROM usuarios WHERE activo = TRUE;
+SELECT * FROM usuarios WHERE edad >= 18 AND edad <= 25;
+SELECT * FROM usuarios WHERE nombre LIKE 'Ana%';      -- empieza por "Ana"
+SELECT * FROM usuarios WHERE email ILIKE '%@uni.es';  -- insensible a mayúsculas
+
+-- Ordenar resultados
+SELECT * FROM usuarios ORDER BY nombre ASC;
+SELECT * FROM usuarios ORDER BY created_at DESC;
+
+-- Paginación (LIMIT + OFFSET)
+SELECT * FROM usuarios ORDER BY id LIMIT 10 OFFSET 0;   -- página 1 (10 registros)
+SELECT * FROM usuarios ORDER BY id LIMIT 10 OFFSET 10;  -- página 2
+
+-- Contar registros
+SELECT COUNT(*) FROM usuarios;
+SELECT COUNT(*) FROM usuarios WHERE activo = TRUE;
+
+-- ── INNER JOIN: combina filas de dos tablas ───────────────────
+-- Muestra todos los posts junto con el nombre de su autor
+SELECT
+    u.nombre        AS autor,
+    u.email,
+    p.titulo,
+    p.created_at
+FROM posts p
+INNER JOIN usuarios u ON u.id = p.usuario_id
+WHERE u.activo = TRUE
+ORDER BY p.created_at DESC;
+
+-- ── LEFT JOIN: incluye también usuarios sin posts ─────────────
+SELECT
+    u.nombre,
+    COUNT(p.id) AS total_posts
+FROM usuarios u
+LEFT JOIN posts p ON p.usuario_id = u.id
+GROUP BY u.id, u.nombre
+ORDER BY total_posts DESC;</code></pre>
+
+    <h3>4.4 UPDATE — Actualizar datos</h3>
+
+<pre><code class="language-sql">-- Actualizar un campo específico
+UPDATE usuarios
+SET nombre = 'Ana García Martínez'
+WHERE id = 1;
+
+-- Actualizar varios campos a la vez
+UPDATE usuarios
+SET nombre = 'Marc L.',
+    activo = FALSE
+WHERE id = 2;
+
+-- ⚠️ ATENCIÓN: sin WHERE se actualizan TODOS los registros
+UPDATE usuarios SET activo = TRUE;  -- ¡Activa a TODOS!</code></pre>
+
+    <h3>4.5 DELETE — Eliminar datos</h3>
+
+<pre><code class="language-sql">-- Eliminar un registro concreto
+DELETE FROM usuarios WHERE id = 3;
+
+-- Eliminar según condición
+DELETE FROM usuarios WHERE activo = FALSE AND created_at < NOW() - INTERVAL '1 year';
+
+-- ⚠️ ATENCIÓN: sin WHERE se eliminan TODOS los registros
+DELETE FROM usuarios;  -- ¡Vacía la tabla por completo!</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. RELACIONES ENTRE TABLAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Relaciones entre tablas</h2>
+
+    <p>
+      El poder de las bases de datos relacionales está en cómo conectan tablas entre sí.
+      Hay tres tipos de relaciones:
+    </p>
+
+    <h3>5.1 Uno a Uno (1:1)</h3>
+    <p>
+      Un registro de la tabla A corresponde a exactamente un registro de la tabla B.
+      Poco frecuente; se usa para separar datos sensibles o muy grandes.
+    </p>
+
+<pre><code class="language-sql">-- Ejemplo: un usuario tiene un único perfil extendido
+CREATE TABLE perfiles (
+    id         SERIAL PRIMARY KEY,
+    usuario_id INTEGER NOT NULL UNIQUE REFERENCES usuarios(id) ON DELETE CASCADE,
+    bio        TEXT,
+    avatar_url VARCHAR(500),
+    web        VARCHAR(500)
+);
+-- La restricción UNIQUE en usuario_id garantiza la relación 1:1</code></pre>
+
+    <h3>5.2 Uno a Muchos (1:N) — la más común</h3>
+    <p>
+      Un registro de la tabla A puede tener muchos registros relacionados en la tabla B,
+      pero cada registro de B pertenece a exactamente uno de A.
+    </p>
+
+<pre><code class="language-sql">-- Ejemplo: un usuario tiene muchos posts; cada post pertenece a un usuario
+-- (ya visto antes con la tabla posts)
+
+-- Otro ejemplo: un producto pertenece a una categoría, pero una categoría
+-- tiene muchos productos
+CREATE TABLE categorias (
+    id     SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE productos (
+    id           SERIAL PRIMARY KEY,
+    nombre       VARCHAR(200) NOT NULL,
+    precio       DECIMAL(10,2) NOT NULL CHECK (precio >= 0),
+    categoria_id INTEGER REFERENCES categorias(id) ON DELETE SET NULL
+);
+-- ON DELETE SET NULL: si se elimina la categoría, el campo queda a NULL
+-- (en lugar de eliminar también los productos)</code></pre>
+
+    <h3>5.3 Muchos a Muchos (N:M)</h3>
+    <p>
+      Un registro de A puede relacionarse con muchos de B, y viceversa.
+      Se implementa con una <strong>tabla intermedia</strong> (o "tabla pivote").
+    </p>
+
+<pre><code class="language-sql">-- Ejemplo: un estudiante puede matricularse en muchos cursos,
+-- y un curso puede tener muchos estudiantes
+
+CREATE TABLE cursos (
+    id     SERIAL PRIMARY KEY,
+    nombre VARCHAR(200) NOT NULL,
+    creditos INTEGER DEFAULT 3
+);
+
+-- Tabla pivote: matrícula (estudiante ↔ curso)
+CREATE TABLE matriculas (
+    -- PK compuesta (combinación de los dos IDs debe ser única)
+    estudiante_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+    curso_id      INTEGER NOT NULL REFERENCES cursos(id)   ON DELETE CASCADE,
+    fecha_alta    DATE DEFAULT CURRENT_DATE,
+    nota          DECIMAL(4,2),
+    PRIMARY KEY (estudiante_id, curso_id)  -- PK compuesta
+);
+
+-- Consultar los cursos de un estudiante
+SELECT c.nombre, c.creditos, m.nota
+FROM matriculas m
+INNER JOIN cursos c ON c.id = m.curso_id
+WHERE m.estudiante_id = 1
+ORDER BY c.nombre;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. FICHERO DE CONEXIÓN — config/database.php
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. El fichero de conexión — config/database.php</h2>
+
+    <p>
+      PDO (<em>PHP Data Objects</em>) es la extensión de PHP recomendada para
+      conectarse a bases de datos. Su ventaja principal es que funciona con
+      múltiples bases de datos con el mismo código y gestiona automáticamente
+      la protección contra SQL Injection con los <em>prepared statements</em>.
+    </p>
+
+<pre><code class="language-php">&lt;?php
+// config/database.php
+// NUNCA pongas credenciales reales aquí si vas a subir esto a GitHub.
+// Usa variables de entorno (ver sección 8 y la guía de Seguridad).
+
+function getConexion(): PDO {
+    // Lee los valores de las variables de entorno (definidas en .env)
+    $host   = getenv('DB_HOST')     ?: 'localhost';
+    $port   = getenv('DB_PORT')     ?: '5432';
+    $dbname = getenv('DB_NAME')     ?: 'mi_proyecto';
+    $user   = getenv('DB_USER')     ?: 'postgres';
+    $pass   = getenv('DB_PASSWORD') ?: '';
+
+    // DSN: cadena que identifica la base de datos y su configuración
+    $dsn = "pgsql:host=$host;port=$port;dbname=$dbname;options='--client_encoding=UTF8'";
+
+    $opciones = [
+        // Lanzar excepciones cuando ocurra un error (en lugar de errores silenciosos)
+        PDO::ATTR_ERRMODE            =&gt; PDO::ERRMODE_EXCEPTION,
+        // Devolver arrays asociativos por defecto (columna =&gt; valor)
+        PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+        // Usar prepared statements reales (más seguro con PostgreSQL)
+        PDO::ATTR_EMULATE_PREPARES   =&gt; false,
+    ];
+
+    try {
+        return new PDO($dsn, $user, $pass, $opciones);
+    } catch (PDOException $e) {
+        // Registrar el error en el log del servidor, nunca mostrarlo al usuario
+        error_log('[DB Error] ' . $e-&gt;getMessage());
+        // Mensaje genérico para el usuario
+        die('Error de conexión a la base de datos. Inténtalo más tarde.');
+    }
+}
+</code></pre>
+
+    <div class="warning">
+      <strong>⚠️ Nunca pongas credenciales directamente en el código fuente</strong>
+      Si subes el repositorio a GitHub con la contraseña escrita en el código,
+      cualquier persona podrá verla. Usa siempre variables de entorno
+      (explicadas en la sección 8).
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. CRUD COMPLETO CON PHP + PDO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. CRUD completo con PHP + PDO</h2>
+
+    <p>CRUD son las cuatro operaciones básicas sobre cualquier base de datos:</p>
+    <table>
+      <thead><tr><th>Operación</th><th>SQL</th><th>Método HTTP</th></tr></thead>
+      <tbody>
+        <tr><td><strong>C</strong>reate (Crear)</td><td>INSERT</td><td>POST</td></tr>
+        <tr><td><strong>R</strong>ead (Leer)</td><td>SELECT</td><td>GET</td></tr>
+        <tr><td><strong>U</strong>pdate (Actualizar)</td><td>UPDATE</td><td>POST / PUT</td></tr>
+        <tr><td><strong>D</strong>elete (Eliminar)</td><td>DELETE</td><td>POST / DELETE</td></tr>
+      </tbody>
+    </table>
+
+<pre><code class="language-php">&lt;?php
+// usuarios_crud.php — Ejemplo completo CRUD con PDO
+require_once 'config/database.php';
+
+$pdo = getConexion();
+
+// ════════════════════════════════════════════════════
+// READ — Obtener todos los usuarios activos
+// ════════════════════════════════════════════════════
+// Usamos query() para consultas sin parámetros del usuario
+$stmt    = $pdo-&gt;query("SELECT id, nombre, email, created_at FROM usuarios WHERE activo = TRUE ORDER BY nombre");
+$usuarios = $stmt-&gt;fetchAll();  // array con todos los registros
+
+foreach ($usuarios as $u) {
+    echo htmlspecialchars($u['nombre']) . ' — ' . htmlspecialchars($u['email']) . "&lt;br&gt;\n";
+}
+
+// ════════════════════════════════════════════════════
+// READ — Obtener un usuario por ID (con prepared statement)
+// ════════════════════════════════════════════════════
+// Siempre usa prepare() cuando el valor viene del usuario
+$id = (int)($_GET['id'] ?? 0);
+
+$stmt = $pdo-&gt;prepare("SELECT * FROM usuarios WHERE id = :id AND activo = TRUE");
+$stmt-&gt;execute([':id' =&gt; $id]);
+$usuario = $stmt-&gt;fetch();   // un solo registro o false si no existe
+
+if ($usuario) {
+    echo "Encontrado: " . htmlspecialchars($usuario['nombre']);
+} else {
+    echo "Usuario no encontrado";
+}
+
+// ════════════════════════════════════════════════════
+// CREATE — Registrar un nuevo usuario
+// ════════════════════════════════════════════════════
+$nombre   = trim($_POST['nombre'] ?? '');
+$email    = trim($_POST['email']  ?? '');
+$password = $_POST['password']    ?? '';
+
+// NUNCA guardar la contraseña en texto plano; usar password_hash con bcrypt
+$hash = password_hash($password, PASSWORD_BCRYPT);
+
+$stmt = $pdo-&gt;prepare(
+    "INSERT INTO usuarios (nombre, email, password_hash)
+     VALUES (:nombre, :email, :password_hash)
+     RETURNING id"
+);
+$stmt-&gt;execute([
+    ':nombre'        =&gt; $nombre,
+    ':email'         =&gt; $email,
+    ':password_hash' =&gt; $hash,
+]);
+$nuevoId = $stmt-&gt;fetchColumn();  // el ID generado por SERIAL
+echo "Usuario creado con ID: $nuevoId";
+
+// ════════════════════════════════════════════════════
+// UPDATE — Actualizar datos de un usuario
+// ════════════════════════════════════════════════════
+$stmt = $pdo-&gt;prepare(
+    "UPDATE usuarios
+     SET nombre = :nombre,
+         email  = :email
+     WHERE id = :id"
+);
+$stmt-&gt;execute([
+    ':nombre' =&gt; 'Nombre Actualizado',
+    ':email'  =&gt; 'nuevo@uni.es',
+    ':id'     =&gt; 5,
+]);
+$filasAfectadas = $stmt-&gt;rowCount();  // número de filas modificadas
+echo "Filas actualizadas: $filasAfectadas";
+
+// ════════════════════════════════════════════════════
+// DELETE — Eliminar un usuario (borrado lógico recomendado)
+// ════════════════════════════════════════════════════
+// Opción 1: borrado lógico (marca como inactivo, no borra el registro)
+$stmt = $pdo-&gt;prepare("UPDATE usuarios SET activo = FALSE WHERE id = :id");
+$stmt-&gt;execute([':id' =&gt; 5]);
+
+// Opción 2: borrado físico (elimina el registro definitivamente)
+$stmt = $pdo-&gt;prepare("DELETE FROM usuarios WHERE id = :id");
+$eliminado = $stmt-&gt;execute([':id' =&gt; 5]);
+echo $eliminado ? "Eliminado" : "No se pudo eliminar";
+?&gt;</code></pre>
+
+    <h3>Ejemplo completo: formulario → validación → base de datos</h3>
+
+<pre><code class="language-php">&lt;?php
+// guardar_usuario.php — Procesa el formulario de registro
+
+require_once 'config/database.php';
+
+// 1. Verificar que la petición es POST
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: registro.html');
+    exit;
+}
+
+// 2. Recoger y limpiar los datos del formulario
+$nombre = trim($_POST['nombre'] ?? '');
+$email  = trim($_POST['email']  ?? '');
+$pass   = $_POST['password']    ?? '';
+
+// 3. Validar los datos
+$errores = [];
+
+if (strlen($nombre) &lt; 2 || strlen($nombre) &gt; 100) {
+    $errores[] = "El nombre debe tener entre 2 y 100 caracteres.";
+}
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errores[] = "El email no tiene un formato válido.";
+}
+if (strlen($pass) &lt; 8) {
+    $errores[] = "La contraseña debe tener al menos 8 caracteres.";
+}
+
+// 4. Si hay errores, mostrarlos
+if (!empty($errores)) {
+    foreach ($errores as $e) {
+        echo "&lt;p style='color:red'&gt;" . htmlspecialchars($e) . "&lt;/p&gt;\n";
+    }
+    echo "&lt;a href='registro.html'&gt;← Volver&lt;/a&gt;";
+    exit;
+}
+
+// 5. Guardar en la base de datos
+try {
+    $pdo = getConexion();
+
+    // Comprobar si el email ya está registrado
+    $check = $pdo-&gt;prepare("SELECT id FROM usuarios WHERE email = :email");
+    $check-&gt;execute([':email' =&gt; $email]);
+    if ($check-&gt;fetch()) {
+        die("Error: Ya existe una cuenta con ese email.");
+    }
+
+    // Insertar el nuevo usuario
+    $stmt = $pdo-&gt;prepare(
+        "INSERT INTO usuarios (nombre, email, password_hash)
+         VALUES (:nombre, :email, :hash)
+         RETURNING id"
+    );
+    $stmt-&gt;execute([
+        ':nombre' =&gt; $nombre,
+        ':email'  =&gt; $email,
+        ':hash'   =&gt; password_hash($pass, PASSWORD_BCRYPT),
+    ]);
+    $nuevoId = $stmt-&gt;fetchColumn();
+
+    // 6. Post/Redirect/Get: redirigir tras éxito para evitar reenvío del formulario
+    header('Location: bienvenida.php?id=' . $nuevoId);
+    exit;
+
+} catch (PDOException $e) {
+    error_log('[Registro] ' . $e-&gt;getMessage());
+    die("Error interno. Por favor, inténtalo de nuevo.");
+}
+?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. VARIABLES DE ENTORNO (.env)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Variables de entorno (.env) — credenciales nunca en el código</h2>
+
+    <p>
+      Una de las reglas más importantes en desarrollo web es que las
+      <strong>credenciales nunca deben estar escritas en el código fuente</strong>.
+      Si subes tu código a GitHub con la contraseña de la base de datos, cualquier
+      persona puede verla (incluso si después borras el commit, queda en el historial).
+    </p>
+
+    <p>
+      La solución estándar son los archivos <strong>.env</strong>: un archivo de texto
+      plano en la raíz del proyecto que contiene las variables sensibles.
+      Este archivo <strong>nunca se sube al repositorio</strong>.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Código INCORRECTO — credenciales en el código fuente</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: la contraseña está en texto plano en el código
+$pdo = new PDO(
+    'pgsql:host=localhost;dbname=mi_proyecto',
+    'postgres',
+    'miContraseñaSecreta123'  // ← esto NO debe estar aquí
+);</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Código CORRECTO — credenciales en variables de entorno</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: se leen de variables de entorno, nunca hardcodeadas
+$host = getenv('DB_HOST')     ?: 'localhost';
+$name = getenv('DB_NAME')     ?: 'mi_proyecto';
+$user = getenv('DB_USER')     ?: 'postgres';
+$pass = getenv('DB_PASSWORD') ?: '';
+
+$pdo = new PDO("pgsql:host=$host;dbname=$name", $user, $pass);</code></pre>
+    </div>
+
+    <h3>Estructura del archivo .env</h3>
+
+<pre><code class="language-bash"># .env  ← ESTE ARCHIVO NUNCA SE SUBE A GIT
+# Añádelo a .gitignore inmediatamente al crear el proyecto
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=mi_proyecto
+DB_USER=postgres
+DB_PASSWORD=mi_contraseña_segura
+
+# También puedes guardar otras configuraciones sensibles
+APP_SECRET_KEY=una_clave_aleatoria_muy_larga
+SMTP_PASSWORD=contraseña_del_correo</code></pre>
+
+    <h3>El archivo .gitignore</h3>
+
+<pre><code class="language-bash"># .gitignore — lista de archivos que Git debe ignorar
+.env
+.env.local
+.env.production
+
+# Dependencias externas (no hay que subir)
+vendor/
+
+# Logs (contienen información sensible)
+*.log
+logs/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db</code></pre>
+
+    <div class="note">
+      <strong>📌 Cómo cargar el .env en PHP</strong>
+      PHP no carga el archivo <code>.env</code> automáticamente. Tienes dos opciones:
+      <ol style="margin:.4rem 0 0 1.5rem;">
+        <li><strong>En Apache (.htaccess):</strong> <code>SetEnv DB_PASSWORD mi_contraseña</code></li>
+        <li><strong>Con la librería vlucas/phpdotenv:</strong> <code>$dotenv = Dotenv\Dotenv::createImmutable(__DIR__); $dotenv-&gt;load();</code> (instalar con Composer)</li>
+        <li><strong>Manualmente al inicio del script:</strong> parsear el .env con <code>parse_ini_file('.env')</code> y cargar con <code>putenv()</code>.</li>
+      </ol>
+      Consulta la <a href="seguridad.html">guía de Seguridad</a> para más detalles sobre la protección de credenciales.
+    </div>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+</body>
+</html>

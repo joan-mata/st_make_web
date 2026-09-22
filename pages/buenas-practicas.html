@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buenas Prácticas — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <main class="content">
+
+    <div class="page-header" style="border-left-color:#10b981;">
+      <h1>✅ Buenas Prácticas</h1>
+      <p class="page-intro">
+        Escribir código que funcione es solo el primer paso. El objetivo profesional
+        es escribir código que cualquier persona (incluido tú mismo dentro de seis
+        meses) pueda leer, mantener y ampliar sin esfuerzo.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿POR QUÉ IMPORTAN LAS BUENAS PRÁCTICAS?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Por qué importan las buenas prácticas?</h2>
+
+    <p>
+      En el mundo real, el código se escribe una vez pero se lee decenas de veces:
+      para corregir errores, añadir funciones, hacer revisiones de código.
+      Un código mal organizado ralentiza al equipo entero y genera más errores.
+    </p>
+    <ul>
+      <li><strong>Mantenibilidad:</strong> es fácil corregir errores y añadir funciones.</li>
+      <li><strong>Escalabilidad:</strong> el proyecto puede crecer sin reescribirse desde cero.</li>
+      <li><strong>Trabajo en equipo:</strong> cualquier compañero puede entender el código sin preguntar.</li>
+      <li><strong>Menos errores:</strong> el código limpio y predecible tiene menos bugs.</li>
+    </ul>
+
+    <div class="note">
+      <strong>📌 La regla del Boy Scout</strong>
+      "Deja el código un poco mejor de como lo encontraste."
+      Cada vez que tocas un archivo, aprovecha para mejorar pequeñas cosas:
+      renombrar una variable confusa, extraer una función, añadir un comentario útil.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. DRY — DON'T REPEAT YOURSELF
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. DRY — Don't Repeat Yourself</h2>
+
+    <p>
+      El principio más importante: <strong>si un bloque de código aparece más de una
+      vez, conviértelo en una función</strong>. Cuando hay que corregir un bug o
+      cambiar la lógica, solo se toca un lugar, no diez.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Incorrecto — código repetido (WET: "Write Everything Twice")</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: la misma lógica de conexión copiada en cada archivo
+
+// En pagina1.php:
+$pdo1 = new PDO('pgsql:host=localhost;dbname=tienda', 'postgres', '1234');
+$pdo1-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// En pagina2.php:
+$pdo2 = new PDO('pgsql:host=localhost;dbname=tienda', 'postgres', '1234');
+$pdo2-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// En pagina3.php:
+$pdo3 = new PDO('pgsql:host=localhost;dbname=tienda', 'postgres', '1234');
+$pdo3-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// ❌ MAL: si cambias la contraseña, tienes que cambiarlo en 10 sitios
+// y seguro que te olvidas alguno.</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Correcto — DRY: una función, un lugar</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: la lógica está en un único lugar
+
+// config/database.php
+function getConexion(): PDO {
+    static $pdo = null;  // singleton: crear la conexión solo una vez
+    if ($pdo === null) {
+        $dsn  = "pgsql:host=" . getenv('DB_HOST') . ";dbname=" . getenv('DB_NAME');
+        $pdo  = new PDO($dsn, getenv('DB_USER'), getenv('DB_PASSWORD'), [
+            PDO::ATTR_ERRMODE            =&gt; PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE =&gt; PDO::FETCH_ASSOC,
+        ]);
+    }
+    return $pdo;
+}
+
+// En cualquier archivo:
+require_once 'config/database.php';
+$pdo = getConexion();  // siempre la misma función, siempre la misma lógica</code></pre>
+    </div>
+
+    <h3>DRY en HTML con includes</h3>
+
+<pre><code class="language-php">&lt;?php
+// ❌ MAL: el header y footer copiados en cada página
+// pagina1.php, pagina2.php, pagina3.php... todos con el mismo &lt;header&gt; copy-paste
+
+// ✅ BIEN: el header y footer están en archivos separados
+// includes/header.php
+// includes/footer.php
+
+// En cada página:
+require_once 'includes/header.php';
+// ... contenido específico de la página ...
+require_once 'includes/footer.php';
+
+// Si cambias el menú de navegación, solo lo cambias en un archivo.
+?&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. NOMBRES DESCRIPTIVOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. Nombres descriptivos</h2>
+
+    <p>
+      El código se escribe para que lo lean personas, no solo máquinas.
+      Los nombres de variables, funciones y archivos deben describir
+      <em>qué contienen o qué hacen</em>, sin necesidad de comentarios adicionales.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Nombres confusos — ¿qué hace esto?</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: nombres de una letra o sin significado
+$x   = 22;
+$d   = new DateTime();
+$arr = getUserData();
+
+function f($a, $b) {
+    return $a * $b * 0.21;
+}
+
+$r = f(100, 3);  // ¿qué es r? ¿qué hace f? ¿qué significan 100 y 3?</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Nombres claros — el código se lee como texto</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: nombres que explican qué son y qué hacen
+$edadUsuario       = 22;
+$fechaRegistro     = new DateTime();
+$datosUsuario      = getUserData();
+
+/**
+ * Calcula el IVA de un importe dado.
+ * @param float $importeBase  Importe sin IVA
+ * @param int   $cantidadItems  Número de artículos
+ * @return float Total con IVA incluido
+ */
+function calcularTotalConIVA(float $importeBase, int $cantidadItems): float {
+    $tasaIVA     = 0.21;   // IVA estándar en España
+    $subtotal    = $importeBase * $cantidadItems;
+    $importeIVA  = $subtotal * $tasaIVA;
+    return $subtotal + $importeIVA;
+}
+
+$totalPedido = calcularTotalConIVA(importeBase: 100.0, cantidadItems: 3);</code></pre>
+    </div>
+
+    <h3>Convenciones de nombres</h3>
+    <table>
+      <thead><tr><th>Contexto</th><th>Estilo</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td>Variables PHP</td><td>camelCase</td><td><code>$usuarioActivo</code>, <code>$listaProductos</code></td></tr>
+        <tr><td>Funciones PHP</td><td>camelCase</td><td><code>calcularTotal()</code>, <code>obtenerUsuarioPorId()</code></td></tr>
+        <tr><td>Clases PHP</td><td>PascalCase</td><td><code>UsuarioController</code>, <code>ProductoModel</code></td></tr>
+        <tr><td>Constantes PHP</td><td>UPPER_SNAKE</td><td><code>MAX_INTENTOS_LOGIN</code>, <code>TASA_IVA</code></td></tr>
+        <tr><td>Tablas SQL</td><td>snake_case plural</td><td><code>usuarios</code>, <code>lineas_pedido</code></td></tr>
+        <tr><td>Columnas SQL</td><td>snake_case</td><td><code>nombre_completo</code>, <code>created_at</code></td></tr>
+        <tr><td>Clases CSS</td><td>kebab-case</td><td><code>tarjeta-producto</code>, <code>btn-primario</code></td></tr>
+        <tr><td>Archivos PHP</td><td>kebab-case</td><td><code>usuario-controller.php</code>, <code>login.php</code></td></tr>
+      </tbody>
+    </table>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. UNA FUNCIÓN = UNA RESPONSABILIDAD
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. Una función = una responsabilidad</h2>
+
+    <p>
+      El <strong>Principio de Responsabilidad Única</strong> (SRP, del inglés
+      <em>Single Responsibility Principle</em>) dice que cada función debe hacer
+      <em>una sola cosa</em> y hacerla bien. Las funciones pequeñas y enfocadas
+      son más fáciles de probar, depurar y reutilizar.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Función "monstruo" — hace demasiadas cosas a la vez</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: esta función valida, conecta a la BD, inserta Y envía un email.
+// Si falla el email, ¿qué pasa con el registro? Imposible de probar.
+function procesarRegistroUsuario($datos) {
+    // Validación
+    if (empty($datos['email'])) return false;
+    if (strlen($datos['password']) &lt; 8) return false;
+
+    // Conexión a la BD
+    $pdo = new PDO('pgsql:host=localhost...', 'user', 'pass');
+
+    // Inserción
+    $stmt = $pdo-&gt;prepare("INSERT INTO usuarios...");
+    $stmt-&gt;execute([...]);
+    $id = $stmt-&gt;fetchColumn();
+
+    // Envío de email de bienvenida
+    mail($datos['email'], "Bienvenido", "Gracias por registrarte...");
+
+    return $id;
+}</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Correcto — cada función tiene una sola responsabilidad</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: funciones pequeñas, cada una con un único propósito
+
+function validarDatosRegistro(array $datos): array {
+    $errores = [];
+    if (empty($datos['email']) || !filter_var($datos['email'], FILTER_VALIDATE_EMAIL)) {
+        $errores[] = 'Email no válido.';
+    }
+    if (strlen($datos['password'] ?? '') &lt; 8) {
+        $errores[] = 'La contraseña debe tener al menos 8 caracteres.';
+    }
+    return $errores;  // array vacío = sin errores
+}
+
+function crearUsuario(PDO $pdo, string $nombre, string $email, string $hash): int {
+    $stmt = $pdo-&gt;prepare(
+        "INSERT INTO usuarios (nombre, email, password_hash) VALUES (:n, :e, :h) RETURNING id"
+    );
+    $stmt-&gt;execute([':n' =&gt; $nombre, ':e' =&gt; $email, ':h' =&gt; $hash]);
+    return (int)$stmt-&gt;fetchColumn();
+}
+
+function enviarEmailBienvenida(string $email, string $nombre): void {
+    $asunto  = "Bienvenido, $nombre";
+    $mensaje = "Gracias por registrarte en nuestro sitio.";
+    mail($email, $asunto, $mensaje);
+}
+
+// Uso: cada función se puede probar y depurar por separado
+$errores = validarDatosRegistro($_POST);
+if (empty($errores)) {
+    $pdo     = getConexion();
+    $hash    = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $nuevoId = crearUsuario($pdo, $_POST['nombre'], $_POST['email'], $hash);
+    enviarEmailBienvenida($_POST['email'], $_POST['nombre']);
+}</code></pre>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. COMENTARIOS ÚTILES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Comentarios útiles</h2>
+
+    <p>
+      Los buenos comentarios explican el <strong>por qué</strong> de una decisión,
+      no el <em>qué</em> hace el código (eso ya se ve leyendo el código).
+      El código bien nombrado casi no necesita comentarios.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Comentarios inútiles — repiten lo que ya dice el código</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: comentarios que no aportan información
+$i = 0;              // inicializar i a 0
+$i++;                // incrementar i
+$usuarios = [];      // array de usuarios
+// Bucle para recorrer usuarios
+foreach ($usuarios as $usuario) {
+    // imprimir nombre
+    echo $usuario['nombre'];
+}</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Comentarios que explican el "por qué" y el contexto</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: los comentarios aportan contexto que el código solo no puede dar
+
+// Usamos BCRYPT con coste 12 (en lugar del 10 por defecto) porque
+// los servidores de producción son suficientemente potentes y
+// queremos mayor resistencia a ataques de fuerza bruta.
+$hash = password_hash($password, PASSWORD_BCRYPT, ['cost' =&gt; 12]);
+
+// Redirigir ANTES de mostrar nada (Post/Redirect/Get pattern).
+// Sin esto, si el usuario recarga la página, el formulario se reenvía.
+header('Location: ' . BASE_URL . '/dashboard');
+exit;  // exit es obligatorio después de header('Location:...')
+
+// La consulta excluye registros con deleted_at IS NOT NULL (borrado lógico).
+// Ver ARCHITECTURE.md para la decisión de no usar borrado físico.
+$stmt = $pdo-&gt;query("SELECT * FROM productos WHERE deleted_at IS NULL");</code></pre>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. ESTRUCTURA DE ARCHIVOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Estructura de archivos del proyecto</h2>
+
+    <p>
+      Una buena estructura hace que cualquier desarrollador sepa dónde buscar cada cosa.
+      Organiza por <strong>funcionalidad/capa</strong>, no por tipo de archivo.
+    </p>
+
+    <div class="folder-tree">
+      <span class="dir">mi-proyecto/</span><br>
+      ├── <span class="dir">config/</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="file">database.php</span>&nbsp;&nbsp;&nbsp;<span class="note-text">← conexión PDO</span><br>
+      │&nbsp;&nbsp;&nbsp;└── <span class="file">app.php</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="note-text">← constantes globales</span><br>
+      ├── <span class="dir">controllers/</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="file">usuario-controller.php</span><br>
+      │&nbsp;&nbsp;&nbsp;└── <span class="file">producto-controller.php</span><br>
+      ├── <span class="dir">models/</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="file">usuario-model.php</span><br>
+      │&nbsp;&nbsp;&nbsp;└── <span class="file">producto-model.php</span><br>
+      ├── <span class="dir">views/</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="dir">usuarios/</span><br>
+      │&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="file">lista.php</span><br>
+      │&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="file">formulario.php</span><br>
+      │&nbsp;&nbsp;&nbsp;└── <span class="dir">layouts/</span><br>
+      │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="file">header.php</span><br>
+      │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="file">footer.php</span><br>
+      ├── <span class="dir">public/</span>&nbsp;&nbsp;&nbsp;<span class="note-text">← único directorio accesible desde el navegador</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="dir">css/</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="dir">js/</span><br>
+      │&nbsp;&nbsp;&nbsp;├── <span class="dir">img/</span><br>
+      │&nbsp;&nbsp;&nbsp;└── <span class="file">index.php</span><br>
+      ├── <span class="file">.env</span>&nbsp;&nbsp;&nbsp;<span class="note-text">← NUNCA se sube a Git</span><br>
+      ├── <span class="file">.gitignore</span><br>
+      └── <span class="file">README.md</span>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. CONTROL DE VERSIONES (GIT)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Control de versiones con Git</h2>
+
+    <p>
+      Git es la herramienta que permite guardar el historial completo de cambios
+      del proyecto, trabajar en equipo sin pisar el trabajo de los demás, y
+      recuperar cualquier versión anterior del código.
+    </p>
+
+<pre><code class="language-bash"># Iniciar un repositorio Git en el proyecto
+git init
+
+# Ver el estado actual (qué archivos han cambiado)
+git status
+
+# Añadir archivos al área de preparación (staging)
+git add config/database.php          # un archivo específico
+git add controllers/                  # una carpeta entera
+git add .                             # todo (con cuidado: asegúrate que .gitignore está correcto)
+
+# Crear un commit con un mensaje descriptivo
+git commit -m "feat: añadir función de registro de usuarios con validación"
+
+# Ver el historial de commits
+git log --oneline
+
+# Subir los cambios al repositorio remoto (GitHub)
+git push origin main</code></pre>
+
+    <h3>Mensajes de commit descriptivos</h3>
+    <p>Un buen mensaje de commit explica QUÉ cambió y POR QUÉ, no cómo.</p>
+
+    <div class="warning">
+      <strong>⚠️ Mensajes de commit inútiles</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-bash">git commit -m "cambios"
+git commit -m "arreglos"
+git commit -m "wip"
+git commit -m "asdfgh"</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Mensajes de commit claros</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-bash">git commit -m "feat: implementar login con verificación de contraseña bcrypt"
+git commit -m "fix: corregir error de codificación UTF-8 en nombres con acentos"
+git commit -m "refactor: extraer lógica de validación a función separada"
+git commit -m "docs: añadir comentarios al fichero de conexión a BD"
+git commit -m "security: usar prepared statements en consulta de búsqueda"</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>📌 Convención: Conventional Commits</strong>
+      Prefijos comunes: <code>feat:</code> (nueva función), <code>fix:</code> (corrección),
+      <code>refactor:</code> (mejora sin cambio de funcionalidad), <code>docs:</code>
+      (documentación), <code>style:</code> (formato), <code>test:</code> (pruebas),
+      <code>security:</code> (seguridad).
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. SEPARACIÓN DE RESPONSABILIDADES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Separación de responsabilidades</h2>
+
+    <p>
+      Cada tecnología tiene su función específica. Mezclarlas crea código
+      espagueti difícil de mantener.
+    </p>
+
+    <table>
+      <thead><tr><th>Tecnología</th><th>Responsabilidad</th><th>Lo que NO debe hacer</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>HTML</strong></td>
+          <td>Estructura y contenido del documento</td>
+          <td>Dar estilos (atributos <code>style</code>, <code>bgcolor</code>)</td>
+        </tr>
+        <tr>
+          <td><strong>CSS</strong></td>
+          <td>Presentación visual y diseño</td>
+          <td>Lógica de negocio o manipulación de datos</td>
+        </tr>
+        <tr>
+          <td><strong>JavaScript</strong></td>
+          <td>Comportamiento e interactividad en el navegador</td>
+          <td>Acceder directamente a la base de datos</td>
+        </tr>
+        <tr>
+          <td><strong>PHP</strong></td>
+          <td>Lógica de servidor, procesamiento, autenticación</td>
+          <td>Mezclar lógica y HTML en el mismo archivo (sin MVC)</td>
+        </tr>
+        <tr>
+          <td><strong>SQL</strong></td>
+          <td>Almacenamiento y consulta de datos</td>
+          <td>Lógica de negocio compleja (reglas de negocio van en PHP)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         9. MANEJO DE ERRORES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">9. Manejo de errores</h2>
+
+    <p>
+      Los errores siempre ocurren: la base de datos no responde, el archivo no existe,
+      el usuario envía datos incorrectos. El buen código los <em>gestiona</em>;
+      el código descuidado los ignora hasta que causan un fallo en producción.
+    </p>
+
+    <div class="warning">
+      <strong>⚠️ Errores ignorados — comportamiento impredecible</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ❌ MAL: si la conexión falla, el código sigue y da errores extraños más adelante
+$pdo = new PDO('pgsql:host=localhost;dbname=tienda', 'user', 'pass');
+$stmt = $pdo-&gt;query("SELECT * FROM usuarios");  // puede fallar silenciosamente
+$usuarios = $stmt-&gt;fetchAll();  // $stmt puede ser false</code></pre>
+    </div>
+
+    <div class="tip">
+      <strong>✅ Manejo explícito de errores con try/catch</strong>
+<pre style="margin:.5rem 0 0;"><code class="language-php">&lt;?php
+// ✅ BIEN: los errores se detectan y gestionan de forma controlada
+try {
+    $pdo = getConexion();  // lanza PDOException si falla
+    $stmt = $pdo-&gt;prepare("SELECT * FROM usuarios WHERE id = :id");
+    $stmt-&gt;execute([':id' =&gt; $id]);
+    $usuario = $stmt-&gt;fetch();
+
+    if ($usuario === false) {
+        // El usuario no existe: redirigir con mensaje informativo
+        header('Location: usuarios.php?error=not_found');
+        exit;
+    }
+} catch (PDOException $e) {
+    // Error de base de datos: loggear el detalle técnico, mostrar mensaje genérico
+    error_log('[Error BD] ' . $e-&gt;getMessage() . ' en ' . $e-&gt;getFile() . ':' . $e-&gt;getLine());
+    // Nunca mostrar el mensaje técnico al usuario en producción
+    http_response_code(500);
+    die("Ha ocurrido un error interno. Por favor, inténtalo más tarde.");
+}</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>📌 Desarrollo vs Producción</strong>
+      En <strong>desarrollo</strong>: muestra todos los errores (<code>display_errors = On</code>
+      en <code>php.ini</code>) para depurar más rápido.<br>
+      En <strong>producción</strong>: oculta los errores al usuario pero regístralos
+      en el log (<code>display_errors = Off</code>, <code>log_errors = On</code>).
+      Mostrar errores técnicos al usuario en producción es un riesgo de seguridad.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         10. SEGURIDAD COMO HÁBITO
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">10. Seguridad como hábito</h2>
+
+    <p>
+      La seguridad no es un módulo que se añade al final del proyecto.
+      Es una mentalidad que se aplica en cada decisión de diseño:
+    </p>
+
+    <ul>
+      <li>¿Este dato viene del usuario? → Validar y sanitizar.</li>
+      <li>¿Voy a mostrarlo en HTML? → <code>htmlspecialchars()</code>.</li>
+      <li>¿Voy a usarlo en SQL? → Prepared statement.</li>
+      <li>¿Es una contraseña? → <code>password_hash()</code>.</li>
+      <li>¿Es una credencial? → Variable de entorno, nunca en el código.</li>
+      <li>¿Es un formulario POST? → Token CSRF.</li>
+    </ul>
+
+    <p>
+      Consulta la <a href="seguridad.html">guía de Seguridad</a> para ejemplos
+      completos de cada uno de estos puntos.
+    </p>
+
+    <h2 class="section-title">Resumen: checklist de buenas prácticas</h2>
+    <ul>
+      <li>Aplicar el principio <strong>DRY</strong>: si se repite más de dos veces, hacer una función.</li>
+      <li>Usar <strong>nombres descriptivos</strong> para variables, funciones y archivos.</li>
+      <li>Cada función tiene <strong>una sola responsabilidad</strong> clara.</li>
+      <li>Los comentarios explican el <strong>por qué</strong>, no el qué.</li>
+      <li>Estructura de archivos <strong>lógica y predecible</strong>.</li>
+      <li>Usar <strong>Git</strong> con commits frecuentes y mensajes descriptivos.</li>
+      <li>Separar <strong>HTML / CSS / JS / PHP / SQL</strong> en sus responsabilidades.</li>
+      <li>Gestionar todos los errores con <strong>try/catch</strong> y logs.</li>
+      <li>Practicar la seguridad en <strong>cada línea</strong> que toca datos externos.</li>
+    </ul>
+
+    <div class="tip">
+      <strong>✅ Objetivo</strong>
+      Tu código debe ser tan claro que un compañero que nunca lo ha visto pueda
+      entender qué hace una función con solo leer su nombre y sus parámetros.
+    </div>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+</body>
+</html>

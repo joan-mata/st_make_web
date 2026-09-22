@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <!-- La navegación se inyecta por nav.js -->
+
+  <main class="content">
+
+    <!-- ── Cabecera de página ────────────────────────────────────────── -->
+    <div class="page-header" style="border-left-color:#3b82f6;">
+      <h1>🎨 CSS</h1>
+      <p class="page-intro">
+        CSS (<em>Cascading Style Sheets</em>) es el lenguaje que controla la
+        <strong>apariencia visual</strong> de las páginas web: colores, tipografía,
+        espaciados, diseño de columnas y mucho más.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿QUÉ ES CSS?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Qué es CSS?</h2>
+
+    <p>
+      CSS separa el <strong>contenido</strong> (HTML) de la
+      <strong>presentación</strong> (estilos visuales). Un mismo HTML puede verse
+      completamente diferente solo cambiando el CSS. La "C" de <em>Cascading</em>
+      (cascada) hace referencia a cómo se resuelven los conflictos cuando varias
+      reglas aplican al mismo elemento: gana la más específica, o la última si tienen
+      la misma especificidad.
+    </p>
+
+    <div class="note">
+      <strong>📌 Separación de responsabilidades</strong>
+      HTML = estructura y contenido. CSS = presentación y diseño.
+      JavaScript = comportamiento e interactividad.
+      Mantener esta separación es fundamental para escribir código profesional.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. FORMAS DE APLICAR CSS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Formas de aplicar CSS</h2>
+
+    <h3>2.1 CSS en línea (inline) — ❌ evitar</h3>
+    <p>Se escribe directamente en el atributo <code>style</code> de un elemento HTML.</p>
+
+<pre><code class="language-html">&lt;!-- ❌ MAL: difícil de mantener, mezcla HTML con CSS --&gt;
+&lt;p style="color: red; font-size: 18px; font-weight: bold;"&gt;
+  Este texto es rojo y grande.
+&lt;/p&gt;</code></pre>
+
+    <h3>2.2 CSS interno (bloque &lt;style&gt;) — solo para pruebas</h3>
+    <p>Se escribe dentro de la etiqueta <code>&lt;style&gt;</code> en el <code>&lt;head&gt;</code>.</p>
+
+<pre><code class="language-html">&lt;head&gt;
+  &lt;style&gt;
+    /* Solo útil para prototipos o páginas de una sola página */
+    p {
+      color: navy;
+      font-size: 16px;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;</code></pre>
+
+    <h3>2.3 CSS externo (archivo .css) — ✅ recomendado siempre</h3>
+    <p>
+      Se crea un archivo <code>.css</code> separado y se enlaza desde el HTML con
+      <code>&lt;link&gt;</code>. Es la forma profesional: un solo archivo CSS para
+      todo el sitio.
+    </p>
+
+<pre><code class="language-html">&lt;!-- En el &lt;head&gt; del HTML --&gt;
+&lt;link rel="stylesheet" href="css/estilos.css"&gt;</code></pre>
+
+<pre><code class="language-css">/* En el archivo css/estilos.css */
+p {
+  color: navy;
+  font-size: 16px;
+  line-height: 1.7;
+}</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. SELECTORES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. Selectores</h2>
+
+    <p>
+      Los selectores indican <em>a qué elementos HTML</em> se aplica la regla CSS.
+    </p>
+
+<pre><code class="language-css">/* ── Selector de elemento (afecta a TODOS los &lt;p&gt;) ── */
+p {
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* ── Selector de clase (.) ── */
+/* Afecta a cualquier elemento con class="destacado" */
+.destacado {
+  background-color: #fef9c3;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+}
+
+/* ── Selector de ID (#) ── */
+/* Afecta SOLO al elemento con id="cabecera" (único en la página) */
+#cabecera {
+  background: #0f172a;
+  color: white;
+  padding: 2rem;
+}
+
+/* ── Selector de atributo ── */
+/* Todos los inputs de tipo text */
+input[type="text"] {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* ── Combinadores ── */
+
+/* Descendiente: todos los &lt;p&gt; dentro de un .contenedor (a cualquier nivel) */
+.contenedor p {
+  font-size: 14px;
+}
+
+/* Hijo directo: solo &lt;li&gt; que son hijos directos de ul.menu */
+ul.menu > li {
+  display: inline-block;
+}
+
+/* Hermano adyacente: &lt;p&gt; que viene justo después de un &lt;h2&gt; */
+h2 + p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* ── Pseudo-clases ── */
+
+/* Estado al pasar el ratón encima */
+a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+/* Estado cuando un input tiene el foco (está seleccionado) */
+input:focus {
+  outline: 2px solid #2563eb;
+  border-color: #2563eb;
+}
+
+/* Primer hijo de su padre */
+li:first-child {
+  font-weight: bold;
+}
+
+/* Elemento par (para filas de tabla alternadas) */
+tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* ── Pseudo-elementos ── */
+
+/* Primera letra de un párrafo */
+p::first-letter {
+  font-size: 2em;
+  float: left;
+  margin-right: 0.1em;
+}
+
+/* Contenido generado antes de un elemento */
+.nota::before {
+  content: "📝 ";
+}</code></pre>
+
+    <h3>Especificidad</h3>
+    <table>
+      <thead>
+        <tr><th>Selector</th><th>Especificidad</th><th>Ejemplo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Elemento</td><td>0,0,1</td><td><code>p { }</code></td></tr>
+        <tr><td>Clase / pseudo-clase</td><td>0,1,0</td><td><code>.clase { }</code></td></tr>
+        <tr><td>ID</td><td>1,0,0</td><td><code>#id { }</code></td></tr>
+        <tr><td>Inline style</td><td>1,0,0,0</td><td><code>style="..."</code></td></tr>
+        <tr><td><code>!important</code></td><td>Gana a todo</td><td>Evitar siempre</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. MODELO DE CAJA
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. El Modelo de Caja (Box Model)</h2>
+
+    <p>
+      En CSS, <strong>cada elemento es una caja rectangular</strong> formada por
+      cuatro áreas concéntricas:
+    </p>
+
+    <div class="bm-visual">
+  <div class="bm-margin">
+    <div class="bm-label-wrap"><span class="bm-label">margin</span><span class="bm-desc">espacio exterior (transparente)</span></div>
+    <div class="bm-border">
+      <div class="bm-label-wrap"><span class="bm-label">border</span><span class="bm-desc">borde visible del elemento</span></div>
+      <div class="bm-padding">
+        <div class="bm-label-wrap"><span class="bm-label">padding</span><span class="bm-desc">relleno interior</span></div>
+        <div class="bm-content">
+          <span class="bm-label">content</span>
+          <span class="bm-desc">texto, imagen, hijos…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<pre><code class="language-css">/* Ejemplo completo de modelo de caja */
+.tarjeta {
+  /* Contenido */
+  width: 300px;
+  height: auto;
+
+  /* Padding: espacio DENTRO del borde (entre contenido y borde) */
+  padding: 16px;          /* todos los lados */
+  padding: 16px 24px;     /* arriba/abajo | izquierda/derecha */
+  padding-top: 16px;      /* lado específico */
+
+  /* Border: el borde visible */
+  border: 2px solid #2563eb;
+  border-radius: 8px;     /* esquinas redondeadas */
+
+  /* Margin: espacio FUERA del borde (entre este elemento y los demás) */
+  margin: 16px;
+  margin: 16px auto;      /* centrar horizontalmente */
+
+  /* Con box-sizing: border-box, width y height INCLUYEN padding y border */
+  /* Esto hace los cálculos mucho más intuitivos */
+  box-sizing: border-box;
+}
+
+/* Buena práctica: aplicar box-sizing a TODO */
+*, *::before, *::after {
+  box-sizing: border-box;
+}</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. FLEXBOX
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Flexbox</h2>
+
+    <p>
+      Flexbox es el sistema moderno de diseño de CSS para distribuir elementos
+      en una fila o columna con gran control sobre la alineación.
+    </p>
+
+<pre><code class="language-css">/* ── Contenedor flex ── */
+.contenedor {
+  display: flex;
+
+  /* Dirección: fila (por defecto) o columna */
+  flex-direction: row;       /* row | column | row-reverse | column-reverse */
+
+  /* Alineación en el eje principal (horizontal en row) */
+  justify-content: center;   /* flex-start | flex-end | center |
+                                space-between | space-around | space-evenly */
+
+  /* Alineación en el eje secundario (vertical en row) */
+  align-items: center;       /* flex-start | flex-end | center |
+                                stretch | baseline */
+
+  /* Permitir que los elementos se envuelvan si no caben */
+  flex-wrap: wrap;
+
+  /* Espacio entre elementos */
+  gap: 16px;
+}
+
+/* ── Elementos hijos flex ── */
+.elemento {
+  /* Cuánto espacio extra puede tomar este elemento */
+  flex-grow: 1;
+
+  /* Cuánto puede encogerse si no hay espacio */
+  flex-shrink: 0;
+
+  /* Tamaño base antes de crecer/encoger */
+  flex-basis: 200px;
+
+  /* Atajo: flex: grow shrink basis */
+  flex: 1 0 200px;
+
+  /* Alineación individual (sobreescribe align-items del padre) */
+  align-self: flex-end;
+}</code></pre>
+
+    <h3>Ejemplos prácticos con Flexbox</h3>
+
+<pre><code class="language-css">/* ── Barra de navegación horizontal ── */
+.navbar {
+  display: flex;
+  justify-content: space-between;  /* logo a la izquierda, links a la derecha */
+  align-items: center;
+  padding: 0 2rem;
+  background: #0f172a;
+  height: 60px;
+}
+
+/* ── Centrar algo vertical y horizontalmente ── */
+.centrado-absoluto {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;         /* ocupa toda la pantalla */
+}
+
+/* ── Tarjetas en fila que se envuelven ── */
+.grid-tarjetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.grid-tarjetas .tarjeta {
+  flex: 1 1 280px;   /* mínimo 280px, crece y se encoge proporcionalmente */
+  max-width: 400px;
+}
+
+/* ── Layout de dos columnas (sidebar + contenido) ── */
+.layout {
+  display: flex;
+  gap: 2rem;
+}
+
+.sidebar {
+  flex: 0 0 240px;   /* ancho fijo de 240px, no crece ni se encoge */
+}
+
+.main-content {
+  flex: 1;           /* ocupa el resto del espacio disponible */
+}</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. VARIABLES CSS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Variables CSS (Custom Properties)</h2>
+
+    <p>
+      Las variables CSS permiten definir valores reutilizables en un solo lugar.
+      Si cambias el valor de la variable, cambia en <em>toda</em> la hoja de estilos.
+    </p>
+
+<pre><code class="language-css">/* ── Definir variables en :root (alcance global) ── */
+:root {
+  /* Colores */
+  --color-primario:    #2563eb;
+  --color-secundario:  #7c3aed;
+  --color-fondo:       #f1f5f9;
+  --color-texto:       #1e293b;
+  --color-muted:       #64748b;
+
+  /* Tipografía */
+  --fuente-base:       -apple-system, 'Segoe UI', sans-serif;
+  --fuente-mono:       'Fira Code', Consolas, monospace;
+  --tamano-base:       16px;
+
+  /* Espaciados */
+  --espaciado-sm:      0.5rem;
+  --espaciado-md:      1rem;
+  --espaciado-lg:      2rem;
+
+  /* Bordes */
+  --radio-sm:          4px;
+  --radio-md:          8px;
+  --radio-lg:          16px;
+  --sombra:            0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ── Usar las variables con var() ── */
+body {
+  font-family: var(--fuente-base);
+  font-size: var(--tamano-base);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+.boton {
+  background-color: var(--color-primario);
+  color: white;
+  padding: var(--espaciado-sm) var(--espaciado-md);
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra);
+}
+
+.boton:hover {
+  /* Puedes usar las variables dentro de funciones también */
+  background-color: color-mix(in srgb, var(--color-primario) 80%, black);
+}
+
+/* ── Sobrescribir variables en un contexto específico ── */
+.tema-oscuro {
+  --color-fondo: #0f172a;
+  --color-texto: #f8fafc;
+  /* Todo lo que use estas variables dentro de .tema-oscuro se actualiza */
+}</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. MEDIA QUERIES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Media Queries (Diseño Responsive)</h2>
+
+    <p>
+      Las media queries aplican estilos CSS solo cuando se cumplen ciertas
+      condiciones, como el ancho de la pantalla. Son la base del diseño
+      <em>responsive</em> (que se adapta a móviles, tablets y escritorio).
+    </p>
+
+<pre><code class="language-css">/* ── Enfoque Mobile First: diseñas primero para móvil ── */
+/* Estilos base (para móvil, sin media query) */
+.contenedor {
+  padding: 1rem;
+  width: 100%;
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;  /* en móvil: una columna */
+  gap: 1rem;
+}
+
+/* ── Breakpoint: tablet (768px o más) ── */
+@media (min-width: 768px) {
+  .contenedor {
+    padding: 1.5rem;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .grid {
+    flex-direction: row;   /* en tablet: varias columnas */
+    flex-wrap: wrap;
+  }
+}
+
+/* ── Breakpoint: escritorio (1024px o más) ── */
+@media (min-width: 1024px) {
+  .contenedor {
+    max-width: 1200px;
+    padding: 2rem;
+  }
+}
+
+/* ── Breakpoint: pantalla grande (1440px o más) ── */
+@media (min-width: 1440px) {
+  html {
+    font-size: 18px;   /* texto ligeramente más grande en pantallas grandes */
+  }
+}
+
+/* ── También puedes usar max-width (Desktop First) ── */
+/* Ocultar sidebar en pantallas pequeñas */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .contenido-principal {
+    margin-left: 0;
+  }
+}
+
+/* ── Orientación del dispositivo ── */
+@media (orientation: landscape) {
+  .video {
+    max-height: 80vh;
+  }
+}
+
+/* ── Preferencia del sistema: modo oscuro ── */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+}</code></pre>
+
+    <div class="tip">
+      <strong>📐 Breakpoints habituales</strong>
+      <ul style="margin:.4rem 0 0 1.5rem;">
+        <li><code>max-width: 480px</code> — Móviles pequeños</li>
+        <li><code>max-width: 768px</code> — Móviles y tablets en vertical</li>
+        <li><code>min-width: 768px</code> — Tablets y mayor</li>
+        <li><code>min-width: 1024px</code> — Escritorio</li>
+        <li><code>min-width: 1280px</code> — Escritorio grande</li>
+      </ul>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. BUENAS PRÁCTICAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Buenas prácticas</h2>
+
+    <h3>8.1 Metodología BEM para nombres de clases</h3>
+    <p>
+      BEM (Bloque__Elemento--Modificador) es una convención para nombrar clases CSS
+      que hace el código predecible y evita conflictos.
+    </p>
+
+<pre><code class="language-css">/* BEM: Bloque__Elemento--Modificador */
+
+/* Bloque: componente independiente */
+.tarjeta { }
+
+/* Elemento: parte del bloque (doble guión bajo) */
+.tarjeta__titulo  { }
+.tarjeta__imagen  { }
+.tarjeta__cuerpo  { }
+.tarjeta__boton   { }
+
+/* Modificador: variante del bloque o elemento (doble guión) */
+.tarjeta--destacada    { }
+.tarjeta--desactivada  { }
+.tarjeta__boton--peligro { }</code></pre>
+
+<pre><code class="language-html">&lt;!-- Uso de BEM en HTML --&gt;
+&lt;div class="tarjeta tarjeta--destacada"&gt;
+  &lt;h3 class="tarjeta__titulo"&gt;Título&lt;/h3&gt;
+  &lt;img class="tarjeta__imagen" src="foto.jpg" alt="Foto"&gt;
+  &lt;div class="tarjeta__cuerpo"&gt;
+    &lt;p&gt;Descripción de la tarjeta.&lt;/p&gt;
+    &lt;button class="tarjeta__boton tarjeta__boton--peligro"&gt;Eliminar&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+    <h3>8.2 Reglas fundamentales</h3>
+    <ul>
+      <li><strong>Nunca uses <code>!important</code></strong> salvo que sea absolutamente necesario (casi nunca lo es).</li>
+      <li><strong>Archivos externos siempre:</strong> no pongas CSS en el atributo <code>style</code> de producción.</li>
+      <li><strong>Variables para colores:</strong> define una paleta de colores con variables y úsalas en todo el proyecto.</li>
+      <li><strong>Mobile first:</strong> diseña primero para pantallas pequeñas y usa <code>min-width</code> para crecer.</li>
+      <li><strong>Agrupa las propiedades</strong> lógicamente: posición, modelo de caja, tipografía, visual.</li>
+    </ul>
+
+<pre><code class="language-css">/* ✅ Orden recomendado de propiedades */
+.elemento {
+  /* 1. Posicionamiento */
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 10;
+
+  /* 2. Modelo de caja */
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  padding: 1rem;
+  margin: 0 auto;
+
+  /* 3. Tipografía */
+  font-family: var(--fuente-base);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  line-height: 1.5;
+  text-align: center;
+
+  /* 4. Visual */
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radio-md);
+  box-shadow: var(--sombra);
+
+  /* 5. Transiciones / animaciones */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}</code></pre>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevTools del Navegador — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <main class="content">
+
+    <div class="page-header" style="border-left-color:#0ea5e9;">
+      <h1>🔍 DevTools del Navegador</h1>
+      <p class="page-intro">
+        Todos los navegadores modernos incluyen herramientas de desarrollo potentes
+        y completamente gratuitas. Dominarlas te permitirá depurar HTML, CSS y
+        JavaScript, analizar el rendimiento y entender cómo funciona cualquier
+        página web.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿QUÉ SON LAS DEVTOOLS?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Qué son las DevTools?</h2>
+
+    <p>
+      Las <strong>DevTools</strong> (herramientas de desarrollador) son un conjunto
+      de utilidades integradas en el navegador que permiten inspeccionar, depurar y
+      analizar páginas web en tiempo real. Están disponibles en Chrome, Firefox,
+      Safari, Edge y cualquier navegador moderno.
+    </p>
+
+    <p>
+      No necesitas instalar nada: ya las tienes. Solo tienes que abrirlas.
+    </p>
+
+    <h3>Cómo abrirlas</h3>
+    <table>
+      <thead>
+        <tr><th>Método</th><th>Acción</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Teclado</td>
+          <td><code>F12</code> — abre/cierra las DevTools</td>
+        </tr>
+        <tr>
+          <td>Teclado</td>
+          <td><code>Ctrl+Shift+I</code> (Windows/Linux) · <code>Cmd+Option+I</code> (Mac)</td>
+        </tr>
+        <tr>
+          <td>Menú contextual</td>
+          <td>Clic derecho en cualquier elemento → <strong>Inspeccionar</strong></td>
+        </tr>
+        <tr>
+          <td>Menú del navegador</td>
+          <td>Menú → Más herramientas → Herramientas para desarrolladores</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip">
+      <strong>💡 Consejo</strong>
+      El atajo <code>Ctrl+Shift+C</code> activa directamente el modo "selector de elementos"
+      — pasa el ratón por la página y haz clic en cualquier elemento para inspeccionarlo
+      sin tener que abrir las DevTools primero.
+    </div>
+
+    <p>
+      Las DevTools se organizan en <strong>paneles</strong>. Los más importantes son:
+      <strong>Elements</strong>, <strong>Console</strong>, <strong>Network</strong>,
+      <strong>Sources</strong> y <strong>Application</strong>. Cada uno tiene un
+      propósito específico que exploraremos en detalle.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. EL PANEL ELEMENTS (INSPECTOR)
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. El Panel Elements (Inspector)</h2>
+
+    <p>
+      El panel <strong>Elements</strong> (llamado <em>Inspector</em> en Firefox) es
+      el más usado. Muestra el árbol DOM en vivo de la página: el HTML tal como lo
+      interpreta el navegador en este momento, incluyendo los cambios que JavaScript
+      haya podido hacer.
+    </p>
+
+    <h3>Qué puedes hacer en Elements</h3>
+
+    <h4>Seleccionar un elemento</h4>
+    <p>
+      Haz clic en el icono de cursor (esquina superior izquierda de las DevTools) o
+      pulsa <code>Ctrl+Shift+C</code>, luego haz clic en cualquier elemento de la
+      página. El DOM se desplazará automáticamente hasta ese nodo.
+    </p>
+
+    <h4>Editar HTML en vivo</h4>
+    <p>
+      Haz doble clic sobre cualquier nodo del árbol DOM para editarlo directamente.
+      Los cambios se aplican al instante (pero solo en memoria — al recargar la
+      página se pierden). Esto es perfecto para probar ideas sin tocar los archivos.
+    </p>
+
+    <h4>El panel Styles (Estilos)</h4>
+    <p>
+      A la derecha del árbol DOM verás el panel <strong>Styles</strong>. Muestra
+      todos los estilos CSS que se aplican al elemento seleccionado, con la fuente
+      (qué archivo y qué línea) y si alguno está sobreescrito (aparece tachado).
+    </p>
+    <ul>
+      <li>Puedes <strong>activar/desactivar</strong> reglas haciendo clic en el checkbox a la izquierda.</li>
+      <li>Puedes <strong>editar valores</strong> haciendo clic sobre ellos.</li>
+      <li>Puedes <strong>añadir nuevas propiedades</strong> haciendo clic al final de un bloque.</li>
+      <li>En propiedades de color aparece un pequeño cuadrado de color — haz clic para abrir el <strong>selector de color</strong> visual.</li>
+    </ul>
+
+    <div class="tip">
+      <strong>🎨 Selector de color integrado</strong>
+      Al hacer clic en el cuadrado de color junto a una propiedad CSS, se abre un
+      selector de color completo con pipeta (para muestrear colores de la pantalla),
+      paleta y conversión entre formatos. Manteniendo <code>Shift</code> y haciendo
+      clic en el cuadrado, ciclas entre formatos: hex → rgb → hsl.
+    </div>
+
+    <h4>El sub-panel Computed (Calculado)</h4>
+    <p>
+      La pestaña <strong>Computed</strong> muestra los valores finales calculados
+      de todas las propiedades CSS, después de aplicar herencia, especificidad y
+      valores por defecto. También incluye una representación visual del
+      <strong>modelo de caja</strong> (margin, border, padding, content) con las
+      dimensiones exactas en píxeles.
+    </p>
+
+    <h4>Forzar estados de elementos</h4>
+    <p>
+      En el panel Styles, busca el botón <strong>:hov</strong>. Al hacer clic,
+      aparece un menú para forzar el estado <code>:hover</code>, <code>:focus</code>,
+      <code>:active</code>, <code>:visited</code> o <code>:focus-within</code>.
+      Esto es muy útil para depurar estilos de hover sin tener que mantener el
+      ratón encima del elemento.
+    </p>
+
+    <h4>Copiar selector o HTML</h4>
+    <p>
+      Clic derecho sobre un nodo del DOM → <strong>Copy</strong> → opciones:
+    </p>
+    <ul>
+      <li><em>Copy element</em> — copia el HTML completo del nodo y sus hijos.</li>
+      <li><em>Copy selector</em> — genera el selector CSS único para ese elemento.</li>
+      <li><em>Copy JS path</em> — genera el código JavaScript para acceder al elemento.</li>
+      <li><em>Copy XPath</em> — la ruta XPath (útil para automatización con Selenium).</li>
+    </ul>
+
+    <div class="note">
+      <strong>📌 El DOM vs. el HTML fuente</strong>
+      Lo que ves en Elements NO es exactamente el HTML de tu archivo. Es el DOM
+      procesado por el navegador. JavaScript puede haber añadido o eliminado
+      elementos, el navegador puede haber corregido errores de HTML… El código
+      fuente real lo ves con <code>Ctrl+U</code>.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. EL PANEL CONSOLE
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. El Panel Console</h2>
+
+    <p>
+      La <strong>Consola</strong> es un REPL de JavaScript (Read-Eval-Print Loop):
+      puedes escribir código JS y ejecutarlo directamente en el contexto de la
+      página actual. También es donde aparecen todos los errores y mensajes de
+      depuración.
+    </p>
+
+    <h3>Métodos de console</h3>
+
+    <pre><code class="language-javascript">// Mostrar información
+console.log('Hola desde JS');
+console.log('Usuario:', usuario);         // Múltiples argumentos
+
+// Avisos y errores
+console.warn('⚠️ Esto es un aviso');
+console.error('❌ Algo salió mal');
+
+// Mostrar datos en forma de tabla (muy útil para arrays de objetos)
+const usuarios = [
+  { nombre: 'Ana',   edad: 22 },
+  { nombre: 'Luis',  edad: 25 },
+];
+console.table(usuarios);
+
+// Agrupar mensajes
+console.group('Datos del formulario');
+console.log('nombre:', nombre);
+console.log('email:', email);
+console.groupEnd();
+
+// Medir tiempo de ejecución
+console.time('mi-operacion');
+// ... código que quieres medir ...
+console.timeEnd('mi-operacion');  // muestra el tiempo transcurrido</code></pre>
+
+    <h3>Atajos de la consola</h3>
+    <p>La consola incluye varios atajos que no existen en JS normal:</p>
+
+    <pre><code class="language-javascript">// $0 = el elemento actualmente seleccionado en el panel Elements
+console.log($0);
+$0.style.border = '2px solid red';   // ¡modificamos el elemento seleccionado!
+
+// $() = alias de document.querySelector()
+$('h1').textContent = 'Cambiado desde la consola';
+
+// $$() = alias de document.querySelectorAll() (devuelve array real)
+$$('p').forEach(p => console.log(p.textContent));
+
+// copy() = copia una variable al portapapeles
+const datos = { nombre: 'Ana', edad: 22 };
+copy(datos);  // ahora puedes pegar el JSON donde quieras
+
+// monitorEvents() = muestra todos los eventos de un elemento
+monitorEvents(document.body, 'click');
+unmonitorEvents(document.body);   // para de monitorizar</code></pre>
+
+    <div class="tip">
+      <strong>💡 Consola multi-línea</strong>
+      Para escribir varias líneas en la consola, pulsa <code>Shift+Enter</code>
+      en lugar de <code>Enter</code>. Así puedes escribir funciones enteras
+      antes de ejecutarlas.
+    </div>
+
+    <h3>Ver errores de PHP en la consola</h3>
+    <p>
+      Los errores de PHP no aparecen en la consola de JavaScript — aparecen en el
+      HTML que genera PHP. Sin embargo, si tu PHP hace una petición AJAX, el error
+      puede aparecer en el panel Network (en la respuesta de la petición).
+      Para ver errores PHP en el navegador, asegúrate de que <code>display_errors</code>
+      esté activado en tu configuración de PHP durante el desarrollo.
+    </p>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. EL PANEL NETWORK
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. El Panel Network</h2>
+
+    <p>
+      El panel <strong>Network</strong> registra todas las peticiones HTTP que hace
+      el navegador: el HTML inicial, los archivos CSS y JS, las imágenes, las
+      fuentes, y las llamadas AJAX/Fetch a APIs o scripts PHP.
+    </p>
+
+    <div class="note">
+      <strong>📌 Importante</strong>
+      El panel Network solo registra peticiones mientras está abierto. Si abres
+      las DevTools después de cargar la página, no verás las peticiones iniciales.
+      Activa la opción <strong>"Preserve log"</strong> para que no se borre al
+      navegar a otra página.
+    </div>
+
+    <h3>Qué ves en cada petición</h3>
+    <p>Haz clic en cualquier fila para ver el detalle:</p>
+    <ul>
+      <li><strong>Headers</strong> — cabeceras de la petición (enviadas) y de la respuesta (recibidas): tipo de contenido, cookies, caché, CORS…</li>
+      <li><strong>Response</strong> — el cuerpo de la respuesta. Si tu PHP devuelve JSON, aquí lo verás. Si hay un error de PHP, también aparece aquí.</li>
+      <li><strong>Preview</strong> — vista previa formateada (muy útil para JSON).</li>
+      <li><strong>Timing</strong> — desglose del tiempo: DNS, TCP, espera del servidor, descarga.</li>
+    </ul>
+
+    <h3>Códigos de estado HTTP</h3>
+    <table>
+      <thead>
+        <tr><th>Código</th><th>Significado</th><th>Cuándo ocurre</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:#22c55e;">200 OK</strong></td>
+          <td>Éxito</td>
+          <td>La petición funcionó correctamente</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#3b82f6;">301 / 302</strong></td>
+          <td>Redirección</td>
+          <td>El recurso se ha movido (permanente/temporal)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#f59e0b;">304 Not Modified</strong></td>
+          <td>Sin cambios</td>
+          <td>El navegador usa la versión en caché</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#ef4444;">404 Not Found</strong></td>
+          <td>No encontrado</td>
+          <td>El archivo o recurso no existe en el servidor</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#ef4444;">500 Server Error</strong></td>
+          <td>Error del servidor</td>
+          <td>Error en PHP, base de datos caída, etc.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:#ef4444;">403 Forbidden</strong></td>
+          <td>Prohibido</td>
+          <td>No tienes permisos para acceder al recurso</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Filtrar peticiones</h3>
+    <p>
+      Usa la barra de filtros para ver solo ciertos tipos de peticiones:
+    </p>
+    <ul>
+      <li><strong>All</strong> — todas las peticiones</li>
+      <li><strong>Fetch/XHR</strong> — llamadas AJAX (tu PHP con <code>fetch()</code>)</li>
+      <li><strong>JS</strong> — archivos JavaScript</li>
+      <li><strong>CSS</strong> — hojas de estilo</li>
+      <li><strong>Img</strong> — imágenes</li>
+      <li><strong>Doc</strong> — documentos HTML</li>
+    </ul>
+
+    <h3>Throttling (simular conexión lenta)</h3>
+    <p>
+      El menú desplegable <strong>"No throttling"</strong> permite simular distintas
+      velocidades de conexión: Fast 3G, Slow 3G, Offline… Ideal para comprobar
+      cómo se comporta tu web en dispositivos móviles con conexión lenta.
+    </p>
+
+    <div class="tip">
+      <strong>💡 Ver qué devuelve tu PHP</strong>
+      Cuando haces una petición Fetch a un script PHP, ve a Network → filtra por
+      Fetch/XHR → selecciona la petición → pestaña <strong>Response</strong>.
+      Verás exactamente lo que PHP devolvió, incluyendo cualquier error o
+      mensaje de <code>var_dump()</code> que hayas dejado olvidado.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. EL PANEL SOURCES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. El Panel Sources</h2>
+
+    <p>
+      El panel <strong>Sources</strong> es el depurador de JavaScript del navegador.
+      Permite pausar la ejecución del código y examinarlo línea a línea, lo que es
+      infinitamente más potente que llenar el código de <code>console.log()</code>.
+    </p>
+
+    <h3>Puntos de ruptura (Breakpoints)</h3>
+    <p>
+      Un breakpoint detiene la ejecución en una línea concreta. Para añadir uno:
+    </p>
+    <ol>
+      <li>Abre Sources → busca tu archivo JS en el panel izquierdo.</li>
+      <li>Haz clic en el número de línea donde quieras pausar.</li>
+      <li>Aparecerá un marcador azul en esa línea.</li>
+      <li>Recarga la página o ejecuta la acción que dispara ese código.</li>
+      <li>La ejecución se detendrá en esa línea.</li>
+    </ol>
+
+    <h3>Controles de depuración</h3>
+    <table>
+      <thead>
+        <tr><th>Botón</th><th>Atajo</th><th>Qué hace</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>▶ Resume</td>
+          <td><code>F8</code></td>
+          <td>Continúa la ejecución hasta el siguiente breakpoint</td>
+        </tr>
+        <tr>
+          <td>⤼ Step over</td>
+          <td><code>F10</code></td>
+          <td>Ejecuta la línea actual y va a la siguiente (sin entrar en funciones)</td>
+        </tr>
+        <tr>
+          <td>↓ Step into</td>
+          <td><code>F11</code></td>
+          <td>Entra dentro de la función que se está llamando</td>
+        </tr>
+        <tr>
+          <td>↑ Step out</td>
+          <td><code>Shift+F11</code></td>
+          <td>Sale de la función actual</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Inspeccionar variables en pausa</h3>
+    <p>Cuando la ejecución está pausada puedes:</p>
+    <ul>
+      <li>Pasar el ratón sobre cualquier variable para ver su valor actual.</li>
+      <li>Ver el panel <strong>Scope</strong> (ámbito): todas las variables locales y globales disponibles.</li>
+      <li>Ver el panel <strong>Call Stack</strong>: la cadena de funciones que llevaron hasta aquí.</li>
+      <li>Añadir expresiones a <strong>Watch</strong> para monitorizar su valor.</li>
+    </ul>
+
+    <h3>El atajo debugger</h3>
+    <p>
+      Añadir <code>debugger;</code> en tu código JavaScript tiene el mismo efecto
+      que un breakpoint, pero directamente en el código:
+    </p>
+
+    <pre><code class="language-javascript">function calcularTotal(items) {
+  debugger;  // la ejecución se pausará aquí (solo si DevTools está abierto)
+  const total = items.reduce((suma, item) => suma + item.precio, 0);
+  return total;
+}</code></pre>
+
+    <div class="note">
+      <strong>📌 Recuerda eliminar los debugger</strong>
+      La sentencia <code>debugger;</code> solo pausa si las DevTools están abiertas,
+      pero es una mala práctica dejarla en código de producción. Elimínala antes
+      de subir al servidor.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. EL PANEL APPLICATION
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. El Panel Application</h2>
+
+    <p>
+      El panel <strong>Application</strong> da acceso al almacenamiento del navegador
+      para el dominio actual. Es donde puedes ver y editar cookies, LocalStorage,
+      SessionStorage y la caché.
+    </p>
+
+    <h3>LocalStorage y SessionStorage</h3>
+    <p>
+      Ambos almacenan datos como pares clave-valor en el navegador del usuario,
+      sin necesidad de servidor. La diferencia es su duración:
+    </p>
+    <table>
+      <thead>
+        <tr><th></th><th>LocalStorage</th><th>SessionStorage</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Duración</strong></td>
+          <td>Permanente (hasta que el usuario o JS lo borre)</td>
+          <td>Solo durante la sesión del navegador (se borra al cerrar la pestaña)</td>
+        </tr>
+        <tr>
+          <td><strong>Capacidad</strong></td>
+          <td>~5-10 MB</td>
+          <td>~5-10 MB</td>
+        </tr>
+        <tr>
+          <td><strong>Acceso</strong></td>
+          <td>Solo desde JavaScript</td>
+          <td>Solo desde JavaScript</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <pre><code class="language-javascript">// Guardar en LocalStorage
+localStorage.setItem('usuario', 'Ana');
+localStorage.setItem('preferencias', JSON.stringify({ tema: 'oscuro' }));
+
+// Leer
+const nombre = localStorage.getItem('usuario');
+const prefs  = JSON.parse(localStorage.getItem('preferencias'));
+
+// Eliminar
+localStorage.removeItem('usuario');
+localStorage.clear();  // elimina todo</code></pre>
+
+    <p>
+      En el panel Application puedes ver todos los valores almacenados, editarlos
+      o eliminarlos directamente, sin necesidad de código.
+    </p>
+
+    <h3>Cookies</h3>
+    <p>
+      Las cookies también aparecen en Application → Cookies. Para cada cookie verás
+      su nombre, valor, dominio, ruta, fecha de expiración y flags de seguridad
+      (HttpOnly, Secure, SameSite). Las cookies <code>HttpOnly</code> no son
+      accesibles desde JavaScript — solo el servidor puede leerlas y escribirlas.
+    </p>
+
+    <div class="tip">
+      <strong>💡 Limpiar el estado de la aplicación</strong>
+      Cuando algo raro pase con tu app y sospeches que hay datos antiguos en el
+      almacenamiento, ve a Application → Storage → haz clic en
+      <strong>"Clear site data"</strong> para borrar todo de una vez.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. TRUCOS RÁPIDOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Trucos rápidos</h2>
+
+    <h3>Atajos de teclado esenciales</h3>
+    <table>
+      <thead>
+        <tr><th>Atajo</th><th>Qué hace</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>F12</code></td>
+          <td>Abrir/cerrar DevTools</td>
+        </tr>
+        <tr>
+          <td><code>Ctrl+Shift+I</code></td>
+          <td>Abrir DevTools (mismo que F12)</td>
+        </tr>
+        <tr>
+          <td><code>Ctrl+Shift+C</code></td>
+          <td>Activar modo selector de elementos</td>
+        </tr>
+        <tr>
+          <td><code>Ctrl+Shift+J</code></td>
+          <td>Abrir DevTools directamente en la Consola</td>
+        </tr>
+        <tr>
+          <td><code>Ctrl+P</code> (dentro de DevTools)</td>
+          <td>Buscar y abrir un archivo del proyecto</td>
+        </tr>
+        <tr>
+          <td><code>Ctrl+Shift+P</code> (dentro de DevTools)</td>
+          <td>Paleta de comandos (como VS Code)</td>
+        </tr>
+        <tr>
+          <td><code>Escape</code></td>
+          <td>Abrir/cerrar el cajón de la consola en cualquier panel</td>
+        </tr>
+        <tr>
+          <td><code>Ctrl+R</code> / <code>Ctrl+Shift+R</code></td>
+          <td>Recargar / Recargar sin caché (hard reload)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Trucos con CSS y elementos</h3>
+    <ul>
+      <li>
+        <strong>Mantén Shift + clic en un cuadrado de color</strong> para ciclar entre
+        formatos: hex → rgb → hsl → hwb.
+      </li>
+      <li>
+        <strong>Doble clic en un valor numérico CSS</strong> (ej. <code>16px</code>) y usa
+        las teclas <strong>↑ ↓</strong> para incrementar/decrementar de uno en uno.
+        Con <code>Shift+↑</code> incrementa de 10 en 10.
+      </li>
+      <li>
+        <strong>Clic derecho en un elemento</strong> → <em>"Scroll into view"</em> para
+        desplazar la página hasta ese elemento aunque esté fuera de la vista.
+      </li>
+      <li>
+        <strong>Clic derecho en un elemento</strong> → <em>"Force state"</em> para forzar
+        estados CSS sin usar el botón :hov.
+      </li>
+      <li>
+        <strong>Clic derecho en un elemento</strong> → <em>"Break on"</em> →
+        <em>"Subtree modifications"</em> para añadir un DOM breakpoint: la ejecución
+        se pausará cuando JavaScript modifique los hijos de ese elemento.
+      </li>
+    </ul>
+
+    <h3>Trucos con la consola</h3>
+    <ul>
+      <li>
+        <code>performance.now()</code> devuelve el tiempo en milisegundos desde que
+        se cargó la página. Úsalo para medir el tiempo de ejecución de un fragmento
+        de código.
+      </li>
+      <li>
+        Escribe <code>%c</code> en un <code>console.log()</code> para aplicar estilos CSS
+        al texto de la consola: <code>console.log('%c¡Hola!', 'color: red; font-size: 20px')</code>.
+      </li>
+      <li>
+        La consola recuerda el historial: pulsa <strong>↑</strong> para recuperar
+        comandos anteriores.
+      </li>
+    </ul>
+
+    <div class="tip">
+      <strong>💡 Hard reload sin caché</strong>
+      Si cambias un archivo CSS o JS y no ves los cambios, el navegador puede
+      estar usando la versión en caché. Con las DevTools abiertas, haz clic
+      derecho en el botón de recarga → <strong>"Empty cache and hard reload"</strong>.
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. EXTENSIONES ÚTILES PARA EL NAVEGADOR
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Extensiones útiles para el navegador</h2>
+
+    <p>
+      Aunque no forman parte de las DevTools, estas extensiones se integran con
+      ellas y son muy útiles para el desarrollo web:
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Extensión</th><th>Para qué sirve</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>WhatFont</strong></td>
+          <td>Detecta la fuente tipográfica de cualquier texto en la página con solo pasar el ratón por encima.</td>
+        </tr>
+        <tr>
+          <td><strong>ColorZilla</strong></td>
+          <td>Pipeta de color que puede muestrear el color exacto de cualquier píxel de la pantalla. Incluye historial de colores.</td>
+        </tr>
+        <tr>
+          <td><strong>Wappalyzer</strong></td>
+          <td>Detecta las tecnologías usadas en cualquier web: framework JS, CMS, servidor web, CDN, analytics…</td>
+        </tr>
+        <tr>
+          <td><strong>React DevTools</strong></td>
+          <td>Añade un panel "Components" a las DevTools para inspeccionar el árbol de componentes React y su estado.</td>
+        </tr>
+        <tr>
+          <td><strong>Vue DevTools</strong></td>
+          <td>Igual que React DevTools pero para Vue.js. Muy útil cuando empieces a usar frameworks JS.</td>
+        </tr>
+        <tr>
+          <td><strong>JSON Formatter</strong></td>
+          <td>Formatea y colorea las respuestas JSON cuando las abres directamente en el navegador.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <strong>📌 Para el futuro</strong>
+      React DevTools y Vue DevTools solo son útiles si estás desarrollando con
+      esos frameworks. Por ahora, WhatFont, ColorZilla y Wappalyzer son las más
+      útiles para el día a día con HTML/CSS/PHP.
+    </div>
+
+    <!-- ── Footer ────────────────────────────────────────────────────── -->
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+</body>
+</html>

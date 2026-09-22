@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript — DevWeb Guide</title>
+  <link rel="stylesheet" href="../css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+</head>
+<body>
+
+  <!-- La navegación se inyecta por nav.js -->
+
+  <main class="content">
+
+    <!-- ── Cabecera de página ────────────────────────────────────────── -->
+    <div class="page-header" style="border-left-color:#eab308;">
+      <h1>⚡ JavaScript</h1>
+      <p class="page-intro">
+        JavaScript es el lenguaje de programación del navegador. Hace las páginas
+        web <strong>dinámicas e interactivas</strong>: responde a clics, valida
+        formularios, carga datos sin recargar la página y mucho más.
+      </p>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         1. ¿QUÉ ES JAVASCRIPT?
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">1. ¿Qué es JavaScript?</h2>
+
+    <p>
+      JavaScript (JS) es un lenguaje de programación <strong>interpretado</strong>,
+      <strong>orientado a objetos</strong> y <strong>dinámico</strong>. A diferencia
+      de HTML y CSS, JS <em>sí</em> tiene lógica: puede tomar decisiones, repetir
+      acciones, calcular valores y modificar la página en tiempo real.
+    </p>
+
+    <p>
+      Se ejecuta directamente en el navegador del usuario (lado cliente), aunque
+      también puede ejecutarse en el servidor con Node.js. En esta guía nos
+      centraremos en el uso cliente.
+    </p>
+
+    <div class="note">
+      <strong>📌 Cómo incluir JS en HTML</strong>
+    </div>
+
+<pre><code class="language-html">&lt;!-- Opción 1: JS externo (recomendado) — colocar antes de &lt;/body&gt; --&gt;
+&lt;script src="js/mi-script.js"&gt;&lt;/script&gt;
+
+&lt;!-- Opción 2: JS inline (solo para pruebas pequeñas) --&gt;
+&lt;script&gt;
+  console.log("Hola desde JavaScript");
+&lt;/script&gt;
+
+&lt;!--
+  Nota: colocar el &lt;script&gt; antes de &lt;/body&gt; asegura que el HTML ya está
+  cargado cuando el JS se ejecuta. También puedes usar defer:
+--&gt;
+&lt;script src="js/mi-script.js" defer&gt;&lt;/script&gt;</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         2. VARIABLES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">2. Variables: var, let y const</h2>
+
+    <p>
+      Una variable es un contenedor con nombre para almacenar un valor.
+      En JavaScript moderno tenemos tres formas de declarar variables:
+    </p>
+
+<pre><code class="language-javascript">// ── const: valor constante (NO puede reasignarse) ── ✅ usar por defecto
+const PI = 3.14159;
+const nombre = "Ana García";
+const url = "https://api.ejemplo.com/datos";
+
+// const NO significa que el objeto sea inmutable:
+const persona = { nombre: "Ana" };
+persona.nombre = "Carlos";  // Esto SÍ funciona (modificar propiedad)
+// persona = {};              // Esto NO funciona (reasignar variable)
+
+// ── let: valor que puede cambiar ── ✅ usar cuando necesitas cambiar el valor
+let contador = 0;
+let estaConectado = true;
+
+contador = contador + 1;   // Permitido: reasignación
+contador++;                // Atajo: incrementar en 1
+estaConectado = false;     // Permitido: cambio de valor
+
+// ── var: forma antigua (evitar en código moderno) ── ❌ no usar
+var antiguo = "evitar";
+// Problemas de var:
+// - Tiene scope de función, no de bloque (comportamiento confuso)
+// - Se "iza" (hoisting) al inicio de la función
+// - Permite redeclaración accidental</code></pre>
+
+    <table>
+      <thead>
+        <tr><th>Palabra clave</th><th>Reasignable</th><th>Scope</th><th>Recomendación</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>const</code></td><td>No</td><td>Bloque</td><td>✅ Usar siempre por defecto</td></tr>
+        <tr><td><code>let</code></td><td>Sí</td><td>Bloque</td><td>✅ Usar si necesitas reasignar</td></tr>
+        <tr><td><code>var</code></td><td>Sí</td><td>Función</td><td>❌ Evitar</td></tr>
+      </tbody>
+    </table>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         3. TIPOS DE DATOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">3. Tipos de datos</h2>
+
+<pre><code class="language-javascript">// ── String (cadena de texto) ──
+const saludo = "Hola mundo";
+const nombre = 'Ana';               // comillas simples también válidas
+const mensaje = `Hola, ${nombre}!`; // Template literals (recomendado)
+
+// Operaciones con strings
+console.log(saludo.length);         // → 10 (número de caracteres)
+console.log(saludo.toUpperCase());  // → "HOLA MUNDO"
+console.log(saludo.includes("Hola")); // → true
+console.log(saludo.replace("mundo", "clase")); // → "Hola clase"
+const palabras = saludo.split(" "); // → ["Hola", "mundo"]
+
+// ── Number (número) ──
+const entero  = 42;
+const decimal = 3.14;
+const negativo = -273.15;
+
+console.log(10 + 3);   // → 13 (suma)
+console.log(10 - 3);   // → 7  (resta)
+console.log(10 * 3);   // → 30 (multiplicación)
+console.log(10 / 3);   // → 3.333...
+console.log(10 % 3);   // → 1  (módulo / resto)
+console.log(10 ** 2);  // → 100 (potencia)
+
+// Conversiones
+const numStr = "42";
+const num    = Number(numStr);    // → 42 (número)
+const entero2 = parseInt("42px"); // → 42 (ignora "px")
+const dec     = parseFloat("3.14abc"); // → 3.14
+
+// ── Boolean ──
+const esActivo  = true;
+const estaVacio = false;
+
+// Operadores lógicos
+const a = true  && false;  // → false (AND: los dos deben ser true)
+const b = true  || false;  // → true  (OR: al menos uno debe ser true)
+const c = !true;           // → false (NOT: invierte el valor)
+
+// ── Array (lista ordenada) ──
+const frutas = ["manzana", "pera", "naranja"];
+const numeros = [1, 2, 3, 4, 5];
+const mixto  = ["texto", 42, true, null]; // puede mezclar tipos
+
+// Acceso por índice (empieza en 0)
+console.log(frutas[0]);  // → "manzana"
+console.log(frutas[2]);  // → "naranja"
+console.log(frutas.length); // → 3
+
+// Métodos de array
+frutas.push("uva");       // Añadir al final
+frutas.pop();             // Eliminar el último
+frutas.unshift("kiwi");   // Añadir al principio
+frutas.shift();           // Eliminar el primero
+
+const frutas2 = frutas.map(f => f.toUpperCase()); // Transforma cada elemento
+const largas  = frutas.filter(f => f.length > 4); // Filtra elementos
+const total   = numeros.reduce((acc, n) => acc + n, 0); // Reduce a un valor
+
+// ── Object (objeto) ──
+const estudiante = {
+  nombre: "Ana García",
+  edad:   22,
+  carrera: "Telecomunicaciones",
+  activo: true,
+  // Objeto anidado
+  direccion: {
+    ciudad: "Madrid",
+    codigoPostal: "28001"
+  },
+  // Método (función dentro de un objeto)
+  saludar: function() {
+    return `Hola, soy ${this.nombre}`;
+  }
+};
+
+// Acceso a propiedades
+console.log(estudiante.nombre);          // → "Ana García"
+console.log(estudiante["edad"]);         // → 22 (forma alternativa)
+console.log(estudiante.direccion.ciudad); // → "Madrid"
+console.log(estudiante.saludar());       // → "Hola, soy Ana García"
+
+// Añadir / modificar propiedades
+estudiante.email = "ana@universidad.es"; // Nueva propiedad
+estudiante.edad  = 23;                   // Modificar existente
+
+// Desestructuración (forma moderna de extraer propiedades)
+const { nombre, edad, carrera } = estudiante;
+console.log(nombre); // → "Ana García"
+
+// ── null y undefined ──
+let sinAsignar;              // undefined: variable declarada pero sin valor
+let vacio = null;            // null: valor vacío intencionado
+
+console.log(typeof sinAsignar); // → "undefined"
+console.log(typeof vacio);      // → "object" (peculiaridad histórica de JS)</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         4. FUNCIONES
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">4. Funciones</h2>
+
+<pre><code class="language-javascript">// ── Declaración de función (function declaration) ──
+// Se puede llamar antes de ser definida (hoisting)
+function sumar(a, b) {
+  return a + b;
+}
+console.log(sumar(3, 5)); // → 8
+
+// ── Expresión de función (function expression) ──
+const multiplicar = function(a, b) {
+  return a * b;
+};
+console.log(multiplicar(3, 5)); // → 15
+
+// ── Arrow function (función flecha) ── ES6+ ✅ recomendada
+const dividir = (a, b) => {
+  if (b === 0) return "Error: división por cero";
+  return a / b;
+};
+
+// Si solo hay una expresión, puedes omitir {} y return:
+const cuadrado   = x => x * x;
+const sumarFlecha = (a, b) => a + b;
+
+console.log(cuadrado(4));      // → 16
+console.log(sumarFlecha(3, 5)); // → 8
+
+// ── Parámetros con valor por defecto ──
+function saludar(nombre = "estudiante", saludo = "Hola") {
+  return `${saludo}, ${nombre}!`;
+}
+console.log(saludar());              // → "Hola, estudiante!"
+console.log(saludar("Ana"));         // → "Hola, Ana!"
+console.log(saludar("Ana", "Buenos días")); // → "Buenos días, Ana!"
+
+// ── Rest parameters (número variable de argumentos) ──
+function sumarTodos(...numeros) {
+  return numeros.reduce((total, n) => total + n, 0);
+}
+console.log(sumarTodos(1, 2, 3, 4, 5)); // → 15
+
+// ── Callbacks: funciones pasadas como argumento ──
+function procesarNumeros(array, callback) {
+  return array.map(callback);
+}
+const dobles = procesarNumeros([1, 2, 3], n => n * 2);
+console.log(dobles); // → [2, 4, 6]
+
+// setTimeout usa un callback (ejecuta la función después de N ms)
+setTimeout(function() {
+  console.log("Han pasado 2 segundos");
+}, 2000);</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         5. MANIPULACIÓN DEL DOM
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">5. Manipulación del DOM</h2>
+
+    <p>
+      El DOM (<em>Document Object Model</em>) es la representación del HTML como
+      árbol de objetos en JavaScript. Podemos seleccionar elementos y modificarlos.
+    </p>
+
+<pre><code class="language-javascript">// ── Seleccionar elementos ──
+
+// querySelector: devuelve el PRIMER elemento que coincide con el selector CSS
+const titulo    = document.querySelector('h1');
+const boton     = document.querySelector('#btn-enviar');
+const primerLi  = document.querySelector('ul li');
+const campo     = document.querySelector('.formulario input[type="text"]');
+
+// querySelectorAll: devuelve TODOS los elementos que coinciden (NodeList)
+const parrafos  = document.querySelectorAll('p');
+const tarjetas  = document.querySelectorAll('.tarjeta');
+
+// Métodos clásicos (también válidos)
+const porId     = document.getElementById('mi-id');
+const porClase  = document.getElementsByClassName('mi-clase'); // HTMLCollection
+const porEtiq   = document.getElementsByTagName('input');      // HTMLCollection
+
+// ── Leer y modificar contenido ──
+
+// innerHTML: HTML como string (cuidado con XSS si viene de usuario)
+console.log(titulo.innerHTML);        // "Hola <strong>Mundo</strong>"
+titulo.innerHTML = 'Nuevo <em>título</em>';
+
+// textContent: solo texto, sin HTML (más seguro)
+console.log(titulo.textContent);    // "Nuevo título"
+titulo.textContent = 'Título seguro'; // Escapa HTML automáticamente
+
+// value: para inputs, selects y textareas
+const input = document.querySelector('input[name="nombre"]');
+console.log(input.value);    // Valor actual del campo
+input.value = 'Ana García';  // Cambiar el valor
+
+// ── Modificar atributos ──
+const imagen = document.querySelector('img');
+console.log(imagen.getAttribute('src'));  // Lee atributo
+imagen.setAttribute('src', 'nueva.jpg'); // Escribe atributo
+imagen.setAttribute('alt', 'Nueva imagen');
+imagen.removeAttribute('disabled');      // Elimina atributo
+
+// Acceso directo a algunos atributos
+const link = document.querySelector('a');
+link.href    = 'https://nueva-url.com';
+link.target  = '_blank';
+
+// ── Manipular clases CSS ──
+const elemento = document.querySelector('.tarjeta');
+elemento.classList.add('activa');          // Añadir clase
+elemento.classList.remove('desactivada');  // Eliminar clase
+elemento.classList.toggle('visible');      // Añadir si no está, quitar si está
+elemento.classList.contains('activa');     // Comprobar si tiene clase → true/false
+
+// ── Modificar estilos CSS directamente ──
+const caja = document.querySelector('.caja');
+caja.style.backgroundColor = '#2563eb'; // camelCase para propiedades con guión
+caja.style.fontSize  = '18px';
+caja.style.display   = 'none';    // Ocultar elemento
+caja.style.display   = 'block';   // Mostrar elemento
+
+// ── Crear y añadir elementos ──
+// Crear un nuevo elemento
+const nuevoParrafo = document.createElement('p');
+nuevoParrafo.textContent = 'Este párrafo fue creado con JavaScript.';
+nuevoParrafo.classList.add('nota');
+
+// Añadirlo al DOM
+const contenedor = document.querySelector('#contenedor');
+contenedor.appendChild(nuevoParrafo);          // Al final
+contenedor.prepend(nuevoParrafo);              // Al principio
+contenedor.insertBefore(nuevoParrafo, otro);   // Antes de un elemento
+
+// Eliminar elementos
+const elemento2 = document.querySelector('.eliminar');
+elemento2.remove();  // Eliminar directamente (ES6+)</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         6. EVENTOS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">6. Eventos</h2>
+
+<pre><code class="language-javascript">// ── addEventListener: la forma moderna y recomendada ──
+const boton = document.querySelector('#mi-boton');
+
+boton.addEventListener('click', function(event) {
+  // "event" contiene información sobre el evento
+  console.log('Botón clicado!');
+  console.log('Elemento:', event.target);   // El elemento que disparó el evento
+  console.log('Coordenadas:', event.clientX, event.clientY);
+});
+
+// Con arrow function:
+boton.addEventListener('click', (e) => {
+  e.preventDefault();  // Previene el comportamiento por defecto (p.ej: submit)
+  console.log('Clic con arrow function');
+});
+
+// ── Eventos de formulario ──
+const formulario = document.querySelector('#mi-formulario');
+
+formulario.addEventListener('submit', function(e) {
+  e.preventDefault(); // SIEMPRE prevenir el envío por defecto al validar
+
+  // Leer valores del formulario
+  const nombre = document.querySelector('#nombre').value.trim();
+  const email  = document.querySelector('#email').value.trim();
+
+  // Validación básica
+  if (nombre === '') {
+    mostrarError('El nombre no puede estar vacío');
+    return; // Detener ejecución
+  }
+
+  if (!email.includes('@')) {
+    mostrarError('Email no válido');
+    return;
+  }
+
+  // Si todo es correcto, enviar datos
+  console.log('Datos válidos:', { nombre, email });
+  // Aquí iría el envío al servidor con fetch...
+});
+
+function mostrarError(mensaje) {
+  const error = document.querySelector('.error-mensaje');
+  error.textContent = mensaje;
+  error.style.display = 'block';
+}
+
+// ── Eventos de teclado ──
+const campoBusqueda = document.querySelector('#buscar');
+
+campoBusqueda.addEventListener('keyup', function(e) {
+  const termino = e.target.value;
+  console.log('Buscando:', termino);
+
+  // Detectar tecla específica
+  if (e.key === 'Enter') {
+    realizarBusqueda(termino);
+  }
+  if (e.key === 'Escape') {
+    campoBusqueda.value = ''; // Limpiar campo
+  }
+});
+
+// ── Eventos de ratón ──
+const caja = document.querySelector('.caja-hover');
+
+caja.addEventListener('mouseenter', () => {
+  caja.style.background = '#2563eb';
+  caja.style.color = 'white';
+});
+
+caja.addEventListener('mouseleave', () => {
+  caja.style.background = '';
+  caja.style.color = '';
+});
+
+// ── Event delegation: un listener para múltiples elementos ──
+// En lugar de añadir un listener a cada tarjeta, uno al contenedor padre
+const lista = document.querySelector('#lista-productos');
+
+lista.addEventListener('click', function(e) {
+  // Detectar qué elemento fue clicado
+  if (e.target.classList.contains('btn-eliminar')) {
+    const item = e.target.closest('.item-producto');
+    item.remove();
+  }
+
+  if (e.target.classList.contains('btn-editar')) {
+    const id = e.target.dataset.id; // Leer data-id="123"
+    editarProducto(id);
+  }
+});</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         7. FETCH API
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">7. Fetch API — Peticiones al servidor</h2>
+
+    <p>
+      La API Fetch permite hacer peticiones HTTP desde JavaScript sin recargar
+      la página (AJAX moderno). Es la forma estándar de comunicarse con el servidor
+      o con APIs externas.
+    </p>
+
+<pre><code class="language-javascript">// ── Fetch básico con .then() ──
+fetch('https://api.ejemplo.com/usuarios')
+  .then(function(response) {
+    // Comprobar si la respuesta fue exitosa
+    if (!response.ok) {
+      throw new Error('Error HTTP: ' + response.status);
+    }
+    // Convertir la respuesta a JSON
+    return response.json();
+  })
+  .then(function(datos) {
+    // Aquí tenemos los datos parseados
+    console.log('Usuarios recibidos:', datos);
+    mostrarUsuarios(datos);
+  })
+  .catch(function(error) {
+    // Capturar cualquier error (red, HTTP, JSON inválido...)
+    console.error('Error al cargar usuarios:', error);
+    mostrarError('No se pudieron cargar los usuarios.');
+  });
+
+// ── Fetch moderno con async/await ── ✅ más legible
+async function cargarUsuarios() {
+  try {
+    const response = await fetch('https://api.ejemplo.com/usuarios');
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    const usuarios = await response.json();
+    return usuarios;
+
+  } catch (error) {
+    console.error('Error:', error);
+    throw error; // Re-lanzar para que lo maneje quien llamó a la función
+  }
+}
+
+// Llamar a la función async
+cargarUsuarios()
+  .then(usuarios => {
+    console.log(usuarios);
+    // Mostrar usuarios en el DOM
+    const lista = document.querySelector('#lista-usuarios');
+    lista.innerHTML = usuarios.map(u => `
+      &lt;li class="usuario"&gt;
+        &lt;strong&gt;${u.nombre}&lt;/strong&gt; — ${u.email}
+      &lt;/li&gt;
+    `).join('');
+  })
+  .catch(err => console.error(err));
+
+// ── POST: enviar datos al servidor ──
+async function crearUsuario(nombre, email) {
+  try {
+    const response = await fetch('/api/usuarios', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Indicamos que enviamos JSON
+      },
+      body: JSON.stringify({ nombre, email }) // Convertir objeto a string JSON
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    const nuevoUsuario = await response.json();
+    console.log('Usuario creado:', nuevoUsuario);
+    return nuevoUsuario;
+
+  } catch (error) {
+    console.error('Error al crear usuario:', error);
+  }
+}
+
+// Ejemplo: enviar formulario con Fetch
+document.querySelector('#form-usuario').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const nombre = document.querySelector('#nombre').value;
+  const email  = document.querySelector('#email').value;
+
+  const usuario = await crearUsuario(nombre, email);
+
+  if (usuario) {
+    // Mostrar mensaje de éxito
+    document.querySelector('#mensaje').textContent = '¡Usuario creado con éxito!';
+    e.target.reset(); // Limpiar formulario
+  }
+});</code></pre>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+         8. BUENAS PRÁCTICAS
+    ═══════════════════════════════════════════════════════════════════════ -->
+    <h2 class="section-title">8. Buenas prácticas</h2>
+
+<pre><code class="language-javascript">// ── 1. const por defecto, let si necesitas cambiar, nunca var ──
+const MAX_INTENTOS = 3;  // ✅
+let intentos = 0;        // ✅ (necesitamos cambiarla)
+var contador = 0;        // ❌
+
+// ── 2. Nombres descriptivos ──
+const n = getUserData();  // ❌ ¿qué es n?
+const datosUsuario = getUserData(); // ✅
+
+// ── 3. Funciones pequeñas con una sola responsabilidad ──
+// ❌ Función que hace demasiado
+function procesarFormulario(e) {
+  e.preventDefault();
+  const nombre = e.target.nombre.value;
+  if (nombre.length < 2) { /* ... */ }
+  fetch('/api/guardar', { /* ... */ });
+  document.querySelector('.confirmacion').style.display = 'block';
+  // etc...
+}
+
+// ✅ Separar responsabilidades
+function validarNombre(nombre) {
+  return nombre.trim().length >= 2;
+}
+
+async function guardarEnServidor(datos) {
+  const res = await fetch('/api/guardar', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(datos)
+  });
+  return res.json();
+}
+
+function mostrarConfirmacion() {
+  document.querySelector('.confirmacion').style.display = 'block';
+}
+
+async function manejarEnvioFormulario(e) {
+  e.preventDefault();
+  const nombre = e.target.nombre.value;
+
+  if (!validarNombre(nombre)) {
+    mostrarError('Nombre demasiado corto');
+    return;
+  }
+
+  await guardarEnServidor({ nombre });
+  mostrarConfirmacion();
+}
+
+// ── 4. Comentar el "por qué", no el "qué" ──
+// ❌ Comentario inútil
+let x = x + 1; // Incrementa x en 1
+
+// ✅ Comentario útil
+// El índice empieza en -1 para que el primer increment lo lleve a 0
+let indice = -1;
+
+// ── 5. Usar console solo para desarrollo ──
+// Eliminar o desactivar console.log en producción
+// Usa un flag de entorno:
+const IS_DEV = window.location.hostname === 'localhost';
+function log(...args) {
+  if (IS_DEV) console.log(...args);
+}</code></pre>
+
+    <div class="warning">
+      <strong>⚠️ Seguridad: cuidado con innerHTML</strong>
+      Nunca uses <code>innerHTML</code> con datos que vienen del usuario o del servidor
+      sin escaparlos primero. Puede abrir vulnerabilidades XSS (Cross-Site Scripting).
+      Usa <code>textContent</code> para texto plano, o crea elementos con
+      <code>createElement</code>.
+    </div>
+
+    <footer class="site-footer">
+      Serveis de Telecomunicacions · Grado en Sistemas de Telecomunicaciones · Prof. Joan Mata
+    </footer>
+
+  </main>
+
+  <script src="../js/nav.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+</body>
+</html>
