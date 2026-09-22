@@ -228,7 +228,6 @@ em     { font-style: italic; }
   color: var(--text-light);
   font-size: 1.05rem;
   margin: 0;
-  max-width: 640px;
 }
 
 /* Section titles */
